@@ -147,11 +147,13 @@ void deleteList(Edge* root){
 
 	//Traverse the list of nodes and delete all of them
 	while(currentEdge != NULL){
+		
 		nextEdge = currentEdge->nextEdge;
+		currentEdge->nextEdge = NULL;
 		currentEdge = NULL;
 		delete currentEdge;
 		currentEdge = nextEdge;
-	}
+	}	
 }
 
 /**
