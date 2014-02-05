@@ -45,8 +45,8 @@ int compareTo(const Edge& edge1, const Edge& edge2){
 	// Compares the smaller vertices of each pair
 	else {
 		int vertex1, vertex2;
-		vertex1 = start1 > end1 ? start1 : end1;
-		vertex2 = start2 > end2 ? start2 : end2;
+		vertex1 = start1 < end1 ? start1 : end1;
+		vertex2 = start2 < end2 ? start2 : end2;
 		return vertex1 > vertex2 ? 1 : -1;
 	}
 }
