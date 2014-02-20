@@ -3,3 +3,5 @@
 *~
 *.stackdump
 /quizzes
+*.gitattributes
+/a2/COMP322 - A2
