@@ -28,26 +28,30 @@ int main() {
   
   list<Edge> edges = createAllEdges(all_pages);
   cout << "Here is the list of edges created:" << endl;
+    
+  
   print(edges);
-
+  
 
   adjacencyList graphAL = organizeList(edges, 5);
   idToWikiMap page_ofID = buildMap(all_pages);
+  
   cout << "Here is the graph associated with the list of edges:" << endl;
   printOrganized(graphAL, page_ofID);
 
-
+  
   cout << "Testing the file input and output:" << endl;
   ofstream ffo; ffo.open("out_graph.txt");
   if(ffo.fail()) { cout << "File could not be opened" << endl; return 1;}
   saveGraphToFile(graphAL, ffo);
   ffo.close();
+  
   ifstream ffi; ffi.open("out_graph.txt");
   if(ffi.fail()) { cout << "File could not be opened" << endl; return 1;}
   edges = readGraphFromFile(ffi);
   ffi.close();
   print(edges);
-
+  
   return 0;
 }
 

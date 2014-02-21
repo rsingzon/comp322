@@ -31,15 +31,32 @@ adjacencyList organizeList(list<Edge>& lst, int numberVertices){
 	adjacencyList organizedList;
 
 	//Iterate through the vertices and add adjacent vertices to each list
-	for (int vertex = 0; vertex < numberVertices; vertex++){
+	for (int vertex = 1; vertex <= numberVertices; vertex++){
 
 		//Create a new list of edges for each vertex
 		list<Edge> *edgeList = new list<Edge>;
 		
+		//Create a list of the vertices which have already been added
+		vector<int> *existingVertices = new vector<int>;
+
+
 		//If the origin or destination matches the current vertex, add edge to list
 		for (Edge edge : lst){
 			if (edge.origin == vertex || edge.destination == vertex){
-				edgeList->push_back(edge);
+				
+				int vertexIndex = edge.origin == vertex ? edge.destination : edge.origin;
+				bool vertexExists = false;
+
+				//Check if the vertex has already been added to the list
+				for (int x : *existingVertices){
+					if (x == vertexIndex) vertexExists = true;
+				}
+				
+				//Vertex does not exist, add it to list
+				if(!vertexExists){
+					existingVertices->push_back(vertexIndex);
+					edgeList->push_back(edge);
+				}
 			}
 		}
 
@@ -56,6 +73,29 @@ adjacencyList organizeList(list<Edge>& lst, int numberVertices){
  */
 void printOrganized(adjacencyList& lst, idToWikiMap page_ofID){
 
+	WikiPage vertex;
+	int index = 1;
+
+	//Iterate through the vertices in the adjacency list
+	for (list<Edge> edgeList : lst){
+		vertex = page_ofID[index];
+		std::cout << "Page \"" << vertex.title << "\" -> ";
+
+		//Print each adjacent edge and its weight
+		for (Edge edge : edgeList){
+
+			//Check if the destination or the origin is the current vertex
+			int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
+			WikiPage adjacentVertex = page_ofID[adjacentVertexID];
+
+			std::cout << adjacentVertex.title << ":" << edge.weight << " ";
+		}
+
+		std::cout << std::endl;
+		index++;
+	}
+
+	
 }
 
 /*New methods*/
@@ -143,11 +183,6 @@ Edge createEdge(WikiPage& page_1, WikiPage& page_2){
 
 	newEdge.weight = weight_1 + weight_2;
 
-	//If the second page never appears in the first page, do not add an edge
-/*	if (weight_1 + weight_2 == 0){
-		return;
-	}
-*/
 	return newEdge;
 }
 
@@ -169,19 +204,70 @@ list<Edge> createAllEdges(list<WikiPage>& pages){
 			if (idFirst == idSecond) continue;
 
 			//Else, create an edge between the pages
-			edges.push_back(createEdge(firstPage, secondPage));
+			Edge newEdge = createEdge(firstPage, secondPage);
+
+			//Only add the edge if its weight > 0
+			if (newEdge.weight != 0){
+				edges.push_back(newEdge);
+			}
 		}
 	}
 
 	return edges;
 }
 
+/*
+ * Takes as input an adjacency list and saves it to a file
+ * typedef vector<list<Edge> > adjacencyList;
+ */
 void saveGraphToFile(adjacencyList& graph_to_save, ofstream& out_file){
 
+	//Iterate through the lists of edges for each vertex and
+	for (list<Edge> edgeList : graph_to_save){
+
+		//Iterate through all of the edges for each of the lists
+		for (Edge edge : edgeList){
+
+			//Avoid duplicating edges by only adding edges whose origins are less than their destinations
+			if (edge.origin < edge.destination){
+				out_file << edge.origin << " " << edge.destination << " " << edge.weight << std::endl;
+			}
+		}
+	}
 }
 
+/*
+ * Takes as input an input file stream and returns a list of edges 
+ */
 list<Edge> readGraphFromFile(ifstream& in_file){
 	list<Edge> graph;
+
+	int index = 0;
+	int value;
+	Edge *newEdge;
+
+	//Iterate through all values in the file
+	while (in_file >> value){
+
+		//Assign first value in line as origin
+		if (index == 0){
+			newEdge = new Edge;
+			newEdge->origin = value;
+		}
+
+		//Assign second value as destination
+		else if (index == 1){
+			newEdge->destination = value;
+		}
+
+		//Assign third value to weight and push edge into list
+		else{
+			newEdge->weight = value;
+			graph.push_back(*newEdge);
+			index = -1;
+		}
+		index++;
+	}
 
 	return graph;
 }
