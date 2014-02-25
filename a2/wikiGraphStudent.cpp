@@ -96,7 +96,7 @@ void printOrganized(adjacencyList& lst, idToWikiMap page_ofID){
 	std::sort(pageOrder.begin(), pageOrder.end());
 	
 	//Iterate through the vertices in the adjacency list
-	while (count < 5){
+	while (count < size){
 
 		vertex = page_ofID[index];
 
@@ -119,8 +119,9 @@ void printOrganized(adjacencyList& lst, idToWikiMap page_ofID){
 			count++;
 		}
 
+		//Wrap around to first index of the adjacency list
 		index++;
-		if (index == 6){
+		if (index == size+1){
 			index = 1;
 		}
 	}
