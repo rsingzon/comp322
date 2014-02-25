@@ -8,6 +8,7 @@
  */
 
 #include <iostream>
+#include <algorithm>
 #include "graphSTL.h"
 
 
@@ -75,6 +76,8 @@ void printOrganized(adjacencyList& lst, idToWikiMap page_ofID){
 
 	WikiPage vertex;
 	int index = 1;
+	
+	
 
 	//Iterate through the vertices in the adjacency list
 	for (list<Edge> edgeList : lst){
@@ -118,34 +121,32 @@ idToWikiMap buildMap(list<WikiPage>& lst){
  * an input file
  */
 int countOccurences(ifstream& in_file, string string_to_count){
-	int occurrences = 0;
-	string word, twoWord, threeWord;
-	string oldWord = "";
-	string olderWord = "";
 	
+	int occurrences = 0;
+	unsigned int stringLength = string_to_count.length();
 
-	//Read words from text file and check if it matches the input string
-	while (in_file >> word){
-		
-		twoWord = oldWord + " " + word;
-		threeWord = olderWord + " " + oldWord + " " + word;
+	string nextLine;
 
-		//Check one, two and three length strings
-		if ((word.find(string_to_count) != string::npos) ||
-			(twoWord.find(string_to_count) != string::npos) ||
-			(threeWord.find(string_to_count) != string::npos)){
+	//Read lines from text file
+	while (getline(in_file, nextLine)){
+	
+		string substring = nextLine;
+		size_t position = substring.find(string_to_count);
 
-			oldWord = "";
-			olderWord = "";
+		//Check if the line contains any instances of the desired string
+		while (position != std::string::npos){
+			
+			//Remove the first part of the line which contains the found word
+			substring = substring.substr(position);
+			if (substring.length() > stringLength){
+				substring = substring.substr(stringLength);
+			}
 
+			//Check if the word exists in the rest of the line
+			position = substring.find(string_to_count);
 			occurrences++;
 		}
-		else{
-			oldWord = word;
-			olderWord = oldWord;
-		}
 	}
-
 	return occurrences;
 }
 
