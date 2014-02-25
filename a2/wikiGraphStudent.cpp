@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <iterator>
 #include "graphSTL.h"
 
 
@@ -30,6 +31,10 @@ void print(list<Edge>& lst){
  */
 adjacencyList organizeList(list<Edge>& lst, int numberVertices){
 	adjacencyList organizedList;
+
+	//Push empty list into first index
+	list<Edge> emptyList;
+	organizedList.push_back(emptyList);
 
 	//Iterate through the vertices and add adjacent vertices to each list
 	for (int vertex = 1; vertex <= numberVertices; vertex++){
@@ -75,33 +80,55 @@ adjacencyList organizeList(list<Edge>& lst, int numberVertices){
 void printOrganized(adjacencyList& lst, idToWikiMap page_ofID){
 
 	WikiPage vertex;
+	int count = 0;
 	int index = 1;
-	
-	
+	int size = page_ofID.size();
 
-	//Iterate through the vertices in the adjacency list
-	for (list<Edge> edgeList : lst){
-		vertex = page_ofID[index];
-		std::cout << "Page \"" << vertex.title << "\" -> ";
+	//Create a vector to sort the strings in alphabetical order
+	vector<string> pageOrder;
 
-		//Print each adjacent edge and its weight
-		for (Edge edge : edgeList){
-
-			//Check if the destination or the origin is the current vertex
-			int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
-			WikiPage adjacentVertex = page_ofID[adjacentVertexID];
-
-			std::cout << adjacentVertex.title << ":" << edge.weight << " ";
-		}
-
-		std::cout << std::endl;
-		index++;
+	//Insert the names of the pages into the new vector
+	for (int i = 1; i <= size; i++){
+		pageOrder.push_back(page_ofID[i].title);
 	}
 
+	//Sort alphabetically
+	std::sort(pageOrder.begin(), pageOrder.end());
 	
+	//Iterate through the vertices in the adjacency list
+	while (count < 5){
+
+		vertex = page_ofID[index];
+
+		//Check if the name of the vertex matches the alphabetized list
+		if (vertex.title.compare(pageOrder.at(count)) == 0){
+		
+			std::cout << "Page \"" << vertex.title << "\" -> ";
+			
+			//Print each adjacent edge and its weight
+			list<Edge> edgeList = lst.at(index);
+			for (Edge edge : edgeList){
+				//Check if the destination or the origin is the current vertex
+				int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
+				WikiPage adjacentVertex = page_ofID[adjacentVertexID];
+
+				std::cout << adjacentVertex.title << ":" << edge.weight << " ";
+			}
+			std::cout << std::endl;
+	
+			count++;
+		}
+
+		index++;
+		if (index == 6){
+			index = 1;
+		}
+	}
 }
 
 /*New methods*/
+
+
 /* Type definition for idToWikiMap:
  * typedef map<int, WikiPage> idToWikiMap;
  */
@@ -175,9 +202,7 @@ Edge createEdge(WikiPage& page_1, WikiPage& page_2){
 	in_file_2.open(page_2.txt_location);
 
 	weight_1 = countOccurences(in_file_1, title_2);
-	std::cout << "Occurrences of " << title_2 << " in " << title_1 << ": " << weight_1 << std::endl;
 	weight_2 = countOccurences(in_file_2, title_1);
-	std::cout << "Occurrences of " << title_1 << " in " << title_2 << ": " << weight_2 << std::endl;
 
 	in_file_1.close();
 	in_file_2.close();
