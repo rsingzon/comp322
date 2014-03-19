@@ -7,7 +7,7 @@ int main() {
     
     cout  << "Creating list of articles" << endl;
     
-    WikiGraph wg;
+    /*WikiGraph wg;
     wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
                                 path + "wiki/text/New_York_City.txt"));
     wg.push_page(make_wiki_page(path + "wiki/wp/c/Chicago.htm",
@@ -58,5 +58,5 @@ int main() {
     cout << "=====================================" << endl;
     Graph g2 = wg2;
     cout << g2;
-    cout << "=====================================" << endl;
+    cout << "=====================================" << endl;*/
 }

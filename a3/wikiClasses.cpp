@@ -1,10 +1,18 @@
-#include "wikiClasses.h"
+/**
+ * COMP 322 - Introduction to C++
+ * Assignment 3 
+ * Winter 2014
+ *
+ * Singzon, Ryan
+ * 260397455
+ *
+ */
 
+#include "wikiClasses.h"
 
 //Standards used by the source html files
 const string LINKED_PAGE_IN_HTML = "title=";
 const string ARTICLE_NAME_IN_HTML = "wgTitle";
-
 
 /* Part of the definition of WikiGraph */
 WikiGraph::WikiGraph(ifstream& in_file_edges, ifstream& in_file_wiki_info) : Graph(in_file_edges) {
