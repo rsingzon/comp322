@@ -179,11 +179,27 @@ void Graph::save_to_output_file(ofstream& o_edges) const{
 
 		//Iterate through all of the edges for each of the lists
 		for (Edge edge : edgeList){
+            bool isEdgeSaved = false;
 
-			/*for (){
-				if (storedEdge.)
-			}*/
-			cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
+            if (savedEdges.count(edge.origin) == 1){
+                if(savedEdges[edge.origin] == edge.destination){
+                    isEdgeSaved = true;
+                }
+            }
+            
+            if(savedEdges.count(edge.destination) == 1){
+                if(savedEdges[edge.destination] == edge.origin){
+                    isEdgeSaved = true;
+                }
+            }
+            
+            //If the edge has not already been saved, save it
+            if(!isEdgeSaved){
+                savedEdges[edge.origin] = edge.destination;
+                savedEdges[edge.destination] = edge.origin;
+                o_edges << edge.origin << " " << edge.destination << " " << edge.weight << endl;
+                cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
+            }
 
 			//Avoid duplicating edges by only adding edges whose origins are less than their destinations
 			/*if (edge.origin < edge.destination){
