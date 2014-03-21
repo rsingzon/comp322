@@ -28,13 +28,22 @@ int main() {
 	cout << "Contents of graph" << endl;
 	cout << testGraph;
 
-	ifstream ffi; 
-	ffi.open("out_graph.txt");
-	if (ffi.fail()) { cout << "File could not be opened" << endl; return 1; }
-	Graph fileGraph(ffi);
-	
-	cout << endl << "Input file graph" << endl;
-	cout << fileGraph;
+	////Test output file
+	//cout << endl << "Saving graph..." << endl;
+	//ofstream ffo; ffo.open("test_graph.txt");
+	//if (ffo.fail()) { cout << "File could not be opened" << endl; return 1; }
+	//testGraph.save_to_output_file(ffo);
+	//ffo.close();
+
+	////Open saved file
+	//cout << endl << "Loading graph..." << endl;
+	//ifstream ffi;
+	//ffi.open("test_graph.txt");
+	//if (ffi.fail()) { cout << "File could not be opened" << endl; return 1; }
+	//Graph fileGraph(ffi);
+
+	//cout << endl << "Input file graph" << endl;
+	//cout << fileGraph;
 
 	/*
     cout  << "Creating list of articles" << endl;

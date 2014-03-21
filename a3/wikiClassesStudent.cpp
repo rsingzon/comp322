@@ -10,7 +10,6 @@
 
 #include "wikiClasses.h"
 
-
 /**
  * Implementation of the Graph class 
  */
@@ -48,7 +47,17 @@ Graph::Graph(list<Edge> lst, int num_vertices){
 
 		//Add the list to the adjacency list in the graph
 		adj_list.push_back(edgeList);
+
 	}
+		cout << endl << "Size of adj_list: " << adj_list.size() << endl;
+
+		for (list<Edge> edgeList : adj_list){
+			for (Edge edge : edgeList){
+				
+				cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
+			}
+			cout << endl;
+		}
 }
 
 //Constructor for graph class using an input file
@@ -130,14 +139,6 @@ Graph::~Graph(){
 }
 
 //Overload the << operator in order to print the contents of the graph
-/*
- Output should take the form of:
- Vertex 1 -> 4:5, 2:2
- Vertex 2 -> 1:2, 4:5, 3:14, 5:4
- Vertex 3 -> 2:14, 5:34
- Vertex 4 -> 1:5, 2:5, 5:58
- Vertex 5 -> 4:58, 2:4, 3:34
-*/
 ostream& operator<< (ostream& o, Graph const& g){
 
 	int index = 1;
@@ -170,7 +171,20 @@ ostream& operator<< (ostream& o, Graph const& g){
 }
 
 void Graph::save_to_output_file(ofstream& o_edges) const{
+	//Iterate through the lists of edges for each vertex and
+	for (list<Edge> edgeList : adj_list){
 
+		//Iterate through all of the edges for each of the lists
+		for (Edge edge : edgeList){
+
+			cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
+
+			//Avoid duplicating edges by only adding edges whose origins are less than their destinations
+			/*if (edge.origin < edge.destination){
+				o_edges << edge.origin << " " << edge.destination << " " << edge.weight << endl;
+			}*/
+		}
+	}
 }
 
 void Graph::push_node(list<Edge>& lst){
