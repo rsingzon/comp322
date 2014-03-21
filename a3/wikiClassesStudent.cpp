@@ -171,9 +171,17 @@ ostream& operator<< (ostream& o, Graph const& g){
 }
 
 void Graph::save_to_output_file(ofstream& o_edges) const{
-	//Keep track of which edges have already been saved
-	map<int, int> savedEdges;
-	
+	//Keep track of which edges have already been saved in a 2D array
+	vector<vector<int>> savedEdges;
+
+	for (int i = 0; i < adj_list.size(); i++){
+		vector<int> column;
+		for (int j = 0; j < adj_list.size(); j++){
+			column.push_back(0);
+		}
+		savedEdges.push_back(column);
+	}
+		
 	//Iterate through the lists of edges for each vertex
 	for (list<Edge> edgeList : adj_list){
 
@@ -181,22 +189,18 @@ void Graph::save_to_output_file(ofstream& o_edges) const{
 		for (Edge edge : edgeList){
             bool isEdgeSaved = false;
 
-            if (savedEdges.count(edge.origin) == 1){
-                if(savedEdges[edge.origin] == edge.destination){
-                    isEdgeSaved = true;
-                }
+            if (savedEdges.at(edge.origin).at(edge.destination) == 1){
+                isEdgeSaved = true;
             }
             
-            if(savedEdges.count(edge.destination) == 1){
-                if(savedEdges[edge.destination] == edge.origin){
-                    isEdgeSaved = true;
-                }
+            if(savedEdges.at(edge.destination).at(edge.origin) == 1){
+                isEdgeSaved = true;
             }
             
             //If the edge has not already been saved, save it
             if(!isEdgeSaved){
-                savedEdges[edge.origin] = edge.destination;
-                savedEdges[edge.destination] = edge.origin;
+                savedEdges.at(edge.origin).at(edge.destination) = 1;
+				savedEdges.at(edge.destination).at(edge.origin) = 1;
                 o_edges << edge.origin << " " << edge.destination << " " << edge.weight << endl;
                 cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
             }
