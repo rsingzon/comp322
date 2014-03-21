@@ -171,12 +171,18 @@ ostream& operator<< (ostream& o, Graph const& g){
 }
 
 void Graph::save_to_output_file(ofstream& o_edges) const{
-	//Iterate through the lists of edges for each vertex and
+	//Keep track of which edges have already been saved
+	map<int, int> savedEdges;
+	
+	//Iterate through the lists of edges for each vertex
 	for (list<Edge> edgeList : adj_list){
 
 		//Iterate through all of the edges for each of the lists
 		for (Edge edge : edgeList){
 
+			/*for (){
+				if (storedEdge.)
+			}*/
 			cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
 
 			//Avoid duplicating edges by only adding edges whose origins are less than their destinations
