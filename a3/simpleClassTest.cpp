@@ -5,10 +5,42 @@ const string path = "./";
 
 int main() {
     
+	//Test creating an abstract graph
+	list<Graph::Edge> edgeList;
+	Graph::Edge e1 = { 1, 4, 5 };
+	Graph::Edge e2 = { 1, 2, 2 };
+	Graph::Edge e3 = { 4, 2, 5 };
+	Graph::Edge e4 = { 4, 5, 58 };
+	Graph::Edge e5 = { 2, 3, 14 };
+	Graph::Edge e6 = { 5, 2, 4 };
+	Graph::Edge e7 = { 5, 3, 34 };
+
+	edgeList.push_back(e1);
+	edgeList.push_back(e2);
+	edgeList.push_back(e3);
+	edgeList.push_back(e4);
+	edgeList.push_back(e5);
+	edgeList.push_back(e6);
+	edgeList.push_back(e7);
+
+	Graph testGraph(edgeList, 5);
+	
+	cout << "Contents of graph" << endl;
+	cout << testGraph;
+
+	ifstream ffi; 
+	ffi.open("out_graph.txt");
+	if (ffi.fail()) { cout << "File could not be opened" << endl; return 1; }
+	Graph fileGraph(ffi);
+	
+	cout << endl << "Input file graph" << endl;
+	cout << fileGraph;
+
+	/*
     cout  << "Creating list of articles" << endl;
     
-    /*WikiGraph wg;
-    wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
+    WikiGraph wg;
+	wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
                                 path + "wiki/text/New_York_City.txt"));
     wg.push_page(make_wiki_page(path + "wiki/wp/c/Chicago.htm",
                                 path + "wiki/text/Chicago.txt"));
@@ -24,7 +56,8 @@ int main() {
     cout << "===============================================" << endl;
     cout << wg;
     cout << "===============================================" << endl;
-    cout << "Here is the underlying abstract graph" << endl;
+	
+	cout << "Here is the underlying abstract graph" << endl;
     cout << "=====================================" << endl;
     Graph g = wg;
     cout << g;
