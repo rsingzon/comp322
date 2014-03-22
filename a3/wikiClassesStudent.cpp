@@ -248,7 +248,6 @@ WikiGraph::WikiPage& make_wiki_page(string path_to_html, string path_to_txt){
 	//Find the title of the page using the input stream
 	page->title = getPageTitle(ffi);
 	ffi.close();
-	cout << "Title: " << page->title << endl;	
 
 	//Set the file paths
 	page->html_location = path_to_html;
@@ -261,11 +260,11 @@ WikiGraph::WikiPage& make_wiki_page(string path_to_html, string path_to_txt){
 void WikiGraph::push_page(WikiPage& wp){
 
 	//Find the next available ID in the graph
-	int id = adj_list.size() + 1;
+	int id = node_to_wiki.size() + 1;
 	
 	//If the node is still the default page, then replace it with the new page
 	if(id == 2){
-		if(node_to_wiki.back().title == ""){
+		if(node_to_wiki.at(0).title == ""){
 			id = 1;
 		}
 	}
@@ -274,26 +273,60 @@ void WikiGraph::push_page(WikiPage& wp){
 	wp.ID = id;
 
 	//Open the HTML file for the WikiPage
-	ifstream ffi;
-	ffi.open(wp.html_location);
-	if (ffi.fail()) { 
-		cout << "Failed to open file" << endl; 
+	ifstream fs_html;
+	fs_html.open(wp.html_location);
+	if (fs_html.fail()) { 
+		cout << "Failed to open HTML file" << endl; 
 	}
 
 	//Obtain the set of linked pages
-	set<string> linkedPages = allAssociations(ffi);
-	
+	set<string> linkedPages = allAssociations(fs_html);
+	fs_html.close();	
+
 	//Build a list of edges that are related to the WikiPage
 	list<Edge> edgeList;
 
+	//Add the WikiPage to the title_to_node map
+	title_to_node.insert(make_pair(wp.title, wp.ID));
+
 	//For all links in the WikiPage, find the weight between the edge
 	for(string page : linkedPages){
-		int occurrences = countOccurrences(ffi, page);
 		
+		//Check if the page exists in the title_to_node vector
+		if(title_to_node.count(page)){
+
+			//Open text file for WikiPage
+			ifstream fs_txt;
+			fs_txt.open(wp.txt_location);
+			if(fs_txt.fail()){
+				cout << "Failed to open text file" << endl;
+			}
+
+			//Add a new edge between the new wikipage and the linked page
+			Edge *newEdge = new Edge;
+			newEdge->origin = wp.ID;
+			newEdge->destination = title_to_node[page];
+			newEdge->weight = countOccurences(fs_txt, page);	
+
+			if(newEdge->weight > 0){
+				edgeList.push_back(*newEdge);		
+			}
+
+			//Close the file
+			fs_txt.close();
+		}
 	}
 
+	Graph::push_node(edgeList);
+
+	//If ID = 1, overwrite dummy wikipage
+	if(id == 1){
+		node_to_wiki.at(0) = wp;
+	}
+	else{
+		node_to_wiki.push_back(wp);	
+	}
 	
-	ffi.close();	
 }
 
 // Comment
@@ -315,14 +348,27 @@ ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	
 	//Initialize variables
 	int index = 1;
-	WikiGraph::WikiPage vertex;
+	WikiGraph::WikiPage wp;
 	vector<list<Graph::Edge>> adj_list = wikiGraph.get_adj_list();
 
 	//Iterate through the vertices in the adjacency list
 	for (list<Graph::Edge> edgeList : adj_list){
 
+		wp = wikiGraph::node_to_wiki.at(index);
+		o << "Page \"" << wp.title << "\" -> ";
 		
+		//Iterate through the edges and print the titles and weights
+		for(Graph::Edge edge : edgeList){
 
+			//Check if the destination or the origin is the current vertex
+			int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
+			WikiGraph::WikiPage adjacentVertex = wikiGraph::title_to_node[adjacentVertexID];	
+
+			o << adjacentVertex.title << ":" << edge.weight << " ";
+		}
+		o << endl;
+
+		index++;
 	}
 
 	//	vertex = page_ofID[index];
@@ -357,3 +403,4 @@ ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	o << "Poopsalot\n";
 	return o;
 }
+
