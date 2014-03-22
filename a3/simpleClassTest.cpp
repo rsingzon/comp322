@@ -74,8 +74,10 @@ int main() {
     
     WikiGraph wg;
 	
-    wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
+   wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
                                 path + "wiki/text/New_York_City.txt"));
+  
+
     wg.push_page(make_wiki_page(path + "wiki/wp/c/Chicago.htm",
                                 path + "wiki/text/Chicago.txt"));
     wg.push_page(make_wiki_page(path + "wiki/wp/t/Toronto.htm",
@@ -85,13 +87,14 @@ int main() {
     wg.push_page(make_wiki_page(path + "wiki/wp/m/Miami%2C_Florida.htm",
                                 path + "wiki/text/Miami%2C_Florida.txt"));
     cout << endl;
-    
+    cout << wg;  
+/*    
     cout << "Testing the management of the graph" << endl;
     cout << "Here is the graph as organizing wikipedia pages" << endl;
     cout << "===============================================" << endl;
     cout << wg;
     cout << "===============================================" << endl;
-	/*
+	
 	cout << "Here is the underlying abstract graph" << endl;
     cout << "=====================================" << endl;
     Graph g = wg;

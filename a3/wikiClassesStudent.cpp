@@ -221,7 +221,13 @@ void Graph::push_node(list<Edge>& lst){
 	}
 
 	//Add the new vertex to the adjacency list
-	adj_list.push_back(lst);
+	if(adj_list.size() == 1){
+		adj_list.at(0) = lst;
+	}
+	else{
+		adj_list.push_back(lst);	
+	}
+	
 }
 
 /**
@@ -261,14 +267,14 @@ void WikiGraph::push_page(WikiPage& wp){
 
 	//Find the next available ID in the graph
 	int id = node_to_wiki.size() + 1;
-	
-	//If the node is still the default page, then replace it with the new page
+
+	//Check if the dummy variable exists at the first index
 	if(id == 2){
 		if(node_to_wiki.at(0).title == ""){
 			id = 1;
 		}
 	}
-
+	
 	//Set the ID of the WikiPage
 	wp.ID = id;
 
@@ -288,6 +294,9 @@ void WikiGraph::push_page(WikiPage& wp){
 
 	//Add the WikiPage to the title_to_node map
 	title_to_node.insert(make_pair(wp.title, wp.ID));
+
+	/////////
+	cout << wp.ID << " " << wp.title << endl;
 
 	//For all links in the WikiPage, find the weight between the edge
 	for(string page : linkedPages){
@@ -312,6 +321,8 @@ void WikiGraph::push_page(WikiPage& wp){
 				edgeList.push_back(*newEdge);		
 			}
 
+			cout << newEdge->origin << " " << newEdge->destination << " " << newEdge->weight << endl;
+	
 			//Close the file
 			fs_txt.close();
 		}
@@ -319,13 +330,14 @@ void WikiGraph::push_page(WikiPage& wp){
 
 	Graph::push_node(edgeList);
 
-	//If ID = 1, overwrite dummy wikipage
+	//Overwrite the dummy wikipage
 	if(id == 1){
 		node_to_wiki.at(0) = wp;
 	}
 	else{
 		node_to_wiki.push_back(wp);	
 	}
+	
 	
 }
 
@@ -351,56 +363,39 @@ ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	WikiGraph::WikiPage wp;
 	vector<list<Graph::Edge>> adj_list = wikiGraph.get_adj_list();
 
+	//TESTING
+	int size = wikiGraph.node_to_wiki.size();
+	/*cout << "SIZE" << size << endl;
+	for(int i = 0; i < size; i++){
+		cout << i << wikiGraph.node_to_wiki.at(i).title << endl;
+	}*/
+
+
 	//Iterate through the vertices in the adjacency list
 	for (list<Graph::Edge> edgeList : adj_list){
 
-		wp = wikiGraph::node_to_wiki.at(index);
-		o << "Page \"" << wp.title << "\" -> ";
+		cout << "Index: " << index << endl;
+
+
+		/*wp = wikiGraph.node_to_wiki.at(index);
+		o << "Page \"" << wp.title << "\" -> ";*/
 		
 		//Iterate through the edges and print the titles and weights
 		for(Graph::Edge edge : edgeList){
 
-			//Check if the destination or the origin is the current vertex
+			cout << "Edge" << endl;
+			/*//Check if the destination or the origin is the current vertex
 			int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
-			WikiGraph::WikiPage adjacentVertex = wikiGraph::title_to_node[adjacentVertexID];	
+			//cout << "ADJACENT VERTEX: " << adjacentVertexID << endl;
+			WikiGraph::WikiPage adjacentVertex = wikiGraph.node_to_wiki.at(adjacentVertexID);	
 
-			o << adjacentVertex.title << ":" << edge.weight << " ";
+			o << adjacentVertex.title << ":" << edge.weight << " ";*/
 		}
 		o << endl;
 
 		index++;
 	}
 
-	//	vertex = page_ofID[index];
-
-	//	//Check if the name of the vertex matches the alphabetized list
-	//	if (vertex.title.compare(pageOrder.at(count)) == 0){
-
-	//		std::cout << "Page \"" << vertex.title << "\" -> ";
-
-	//		//Print each adjacent edge and its weight
-	//		list<Edge> edgeList = lst.at(index);
-	//		for (Edge edge : edgeList){
-	//			//Check if the destination or the origin is the current vertex
-	//			int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
-	//			WikiPage adjacentVertex = page_ofID[adjacentVertexID];
-
-	//			std::cout << adjacentVertex.title << ":" << edge.weight << " ";
-	//		}
-	//		std::cout << std::endl;
-
-	//		count++;
-	//	}
-
-	//	//Wrap around to first index of the adjacency list
-	//	index++;
-	//	if (index == size + 1){
-	//		index = 1;
-	//	}
-	//}
-
-	
-	o << "Poopsalot\n";
 	return o;
 }
 
