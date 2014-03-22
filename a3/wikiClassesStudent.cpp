@@ -9,6 +9,7 @@
 */
 
 #include "wikiClasses.h"
+#include <algorithm>
 
 /**
  * Implementation of the Graph class 
@@ -16,6 +17,9 @@
 
 //Constructor for graph class using vertices and edges
 Graph::Graph(list<Edge> lst, int num_vertices){
+
+	list<Edge> l_dummy;
+	adj_list.push_back(l_dummy);
 
 	//Iterate through vertices and add adjacent vertices to each list
 	for(int vertex = 1; vertex <= num_vertices; vertex++){
@@ -146,10 +150,16 @@ Graph::~Graph(){
 //Overload the << operator in order to print the contents of the graph
 ostream& operator<< (ostream& o, Graph const& g){
 
-	int index = 1;
+	int index = 0;
 
 	//Iterate through the lists of edges in the adjacency list
 	for (list<Graph::Edge> edgeList : g.get_adj_list()){
+
+		//Don't print dummy values at index 0
+		if(index == 0){
+			index++; 
+			continue;	
+		} 
 
 		//Print the vertex
 		o << "Vertex " << index << " -> ";
@@ -213,21 +223,15 @@ void Graph::push_node(list<Edge>& lst){
 	//Add each edge to the destination vertex 
 	for(Edge edge : lst){
 		//Get the list of edges for the destination vertex
-		list<Edge> vertexList = adj_list.at(edge.destination-1);
+		list<Edge> edgeList = adj_list.at(edge.destination);
 		
 		//Add edge to list and update the adjacency list in the graph
-		vertexList.push_back(edge);
-		adj_list.at(edge.destination - 1) = vertexList;
+		edgeList.push_back(edge);
+		adj_list.at(edge.destination) = edgeList;
 	}
 
-	//Add the new vertex to the adjacency list
-	if(adj_list.size() == 1){
-		adj_list.at(0) = lst;
-	}
-	else{
-		adj_list.push_back(lst);	
-	}
-	
+	//Add the new vertex to the adjacency list	
+	adj_list.push_back(lst);			
 }
 
 /**
@@ -242,7 +246,7 @@ WikiGraph::~WikiGraph(){
 //Creates a new WikiPage from HTML and text source files
 WikiGraph::WikiPage& make_wiki_page(string path_to_html, string path_to_txt){
 	
-	//Dynamically allocate memory for the WikiPage.  Remember to DELETE!
+	//Dynamically allocate memory for the WikiPage.  Remember to delete in destructor
 	WikiGraph::WikiPage *page = new WikiGraph::WikiPage;
 	WikiGraph::WikiPage &pageRef = *page;
 	page->ID = 0;
@@ -266,14 +270,7 @@ WikiGraph::WikiPage& make_wiki_page(string path_to_html, string path_to_txt){
 void WikiGraph::push_page(WikiPage& wp){
 
 	//Find the next available ID in the graph
-	int id = node_to_wiki.size() + 1;
-
-	//Check if the dummy variable exists at the first index
-	if(id == 2){
-		if(node_to_wiki.at(0).title == ""){
-			id = 1;
-		}
-	}
+	int id = node_to_wiki.size();
 	
 	//Set the ID of the WikiPage
 	wp.ID = id;
@@ -294,9 +291,6 @@ void WikiGraph::push_page(WikiPage& wp){
 
 	//Add the WikiPage to the title_to_node map
 	title_to_node.insert(make_pair(wp.title, wp.ID));
-
-	/////////
-	cout << wp.ID << " " << wp.title << endl;
 
 	//For all links in the WikiPage, find the weight between the edge
 	for(string page : linkedPages){
@@ -329,15 +323,7 @@ void WikiGraph::push_page(WikiPage& wp){
 	}
 
 	Graph::push_node(edgeList);
-
-	//Overwrite the dummy wikipage
-	if(id == 1){
-		node_to_wiki.at(0) = wp;
-	}
-	else{
-		node_to_wiki.push_back(wp);	
-	}
-	
+	node_to_wiki.push_back(wp);	
 	
 }
 
@@ -359,43 +345,60 @@ void WikiGraph::save_to_output_files(ofstream& out_edges, ofstream& out_title_to
 ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	
 	//Initialize variables
-	int index = 1;
 	WikiGraph::WikiPage wp;
 	vector<list<Graph::Edge>> adj_list = wikiGraph.get_adj_list();
 
-	//TESTING
-	int size = wikiGraph.node_to_wiki.size();
-	/*cout << "SIZE" << size << endl;
-	for(int i = 0; i < size; i++){
-		cout << i << wikiGraph.node_to_wiki.at(i).title << endl;
-	}*/
+	//Create a vector to sort the strings in alphabetical order
+	vector<string> pageOrder;
 
+	//Insert names of pages into the new vector
+	pageOrder.push_back(""); //Dummy page
+	for(int i = 1; i < wikiGraph.node_to_wiki.size(); i++){
+		pageOrder.push_back(wikiGraph.node_to_wiki.at(i).title);
+	}
+
+	//Sort alphabetically
+	std::sort(pageOrder.begin(), pageOrder.end());
+
+
+	int index = 1;		//Index of orderedPage vector
+	int count = 1;		//Number of vertices printed
 
 	//Iterate through the vertices in the adjacency list
-	for (list<Graph::Edge> edgeList : adj_list){
+	//for (list<Graph::Edge> edgeList : adj_list){
+	while(count < adj_list.size()){
 
-		cout << "Index: " << index << endl;
+		wp = wikiGraph.node_to_wiki.at(index);
 
-
-		/*wp = wikiGraph.node_to_wiki.at(index);
-		o << "Page \"" << wp.title << "\" -> ";*/
+		//Check if the name of the WikiPage matches the alphabetized list
+		if(wp.title == pageOrder.at(count)){
+			o << "Page \"" << wp.title << "\" -> ";
 		
-		//Iterate through the edges and print the titles and weights
-		for(Graph::Edge edge : edgeList){
+			bool first = true;
+			list<Graph::Edge> edgeList = adj_list.at(index);
+			
+			//Iterate through the edges and print the titles and weights
+			for(Graph::Edge edge : edgeList){
 
-			cout << "Edge" << endl;
-			/*//Check if the destination or the origin is the current vertex
-			int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
-			//cout << "ADJACENT VERTEX: " << adjacentVertexID << endl;
-			WikiGraph::WikiPage adjacentVertex = wikiGraph.node_to_wiki.at(adjacentVertexID);	
+				//Check if the destination or the origin is the current vertex
+				int adjacentVertexID = edge.origin == index ? edge.destination : edge.origin;
+				WikiGraph::WikiPage adjacentVertex = wikiGraph.node_to_wiki.at(adjacentVertexID);	
 
-			o << adjacentVertex.title << ":" << edge.weight << " ";*/
-		}
-		o << endl;
+				//Print comma if not the first iteration
+				if(!first) o << ", ";
+				first = false;
+				o << adjacentVertex.title << ":" << edge.weight;
+			}
+			o << endl;	
+			count++;
+		}		
 
+		//Wrap around to index 1 of the adjacency list
 		index++;
+		if (index == adj_list.size()){
+			index = 1;
+		}
 	}
 
 	return o;
 }
-

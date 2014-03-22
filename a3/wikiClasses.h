@@ -72,7 +72,10 @@ public:
     };
     
     /*Constructors and Destructor*/
-    WikiGraph() { WikiPage wp_dummy; node_to_wiki.push_back(wp_dummy);} // default
+    WikiGraph() { WikiPage wp_dummy; node_to_wiki.push_back(wp_dummy);
+
+        
+    } // default
     /* the constructor below reads a WikiGraph that was saved
      in two separate external files : PROVIDED BELOW */
     WikiGraph(WikiGraph& other_graph) : Graph(other_graph) {
