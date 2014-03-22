@@ -1,0 +1,20 @@
+1
+New York City
+./wiki/wp/n/New_York_City.htm
+./wiki/text/New_York_City.txt
+2
+Chicago
+./wiki/wp/c/Chicago.htm
+./wiki/text/Chicago.txt
+3
+Toronto
+./wiki/wp/t/Toronto.htm
+./wiki/text/Toronto.txt
+4
+Montreal
+./wiki/wp/m/Montreal.htm
+./wiki/text/Montreal.txt
+5
+Miami, Florida
+./wiki/wp/m/Miami%2C_Florida.htm
+./wiki/text/Miami%2C_Florida.txt

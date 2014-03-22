@@ -241,6 +241,26 @@ void Graph::push_node(list<Edge>& lst){
 // Destructor for the WikiGraph class
 WikiGraph::~WikiGraph(){
 
+	cout << "Deleting wikigraph" << endl;
+	bool first = true;
+
+
+/*
+	for(WikiPage page : node_to_wiki){
+		if(first){
+			first = false;
+			continue;
+		}
+		delete &page;
+	}
+
+	for(list<Edge> edgeList : adj_list){
+		for(Edge edge : edgeList){
+			delete &edge;
+		}
+
+	}*/
+
 }
 
 //Creates a new WikiPage from HTML and text source files
@@ -337,9 +357,30 @@ void WikiGraph::push_page(WikiPage& wp){
 	
 }
 
-// Comment
+/*Saves the WikiGraph to two text files:
+ * 1. Edges in the graph
+ * 2. Information of each WikiPage in the graph
+ */
 void WikiGraph::save_to_output_files(ofstream& out_edges, ofstream& out_title_to_node)const{
 
+	//First, save the list of edges for each vertex
+	save_to_output_file(out_edges);
+
+	bool first = true;
+	//Save the fields of each WikiPage struct
+	for(WikiPage wp : node_to_wiki){
+		
+		//Don't save the first entry of node_to_wiki, it is a dummy wp
+		if(first){ 
+			first = false;
+			continue;
+		}
+
+		out_title_to_node << wp.ID << endl;
+		out_title_to_node << wp.title << endl;
+		out_title_to_node << wp.html_location << endl;
+		out_title_to_node << wp.txt_location << endl;
+	}
 }
 
 //Overload the << operator in order to print the contents of the wikiGraph

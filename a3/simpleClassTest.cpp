@@ -5,7 +5,7 @@ const string path = "./";
 
 int main() {
     
-	//Test creating an abstract graph
+/*	//Test creating an abstract graph
 	list<Graph::Edge> edgeList;
 	Graph::Edge e1 = { 1, 4, 5 };
 	Graph::Edge e2 = { 1, 2, 2 };
@@ -28,7 +28,7 @@ int main() {
 	cout << "Contents of graph" << endl;
 	cout << testGraph;
 
-/*	//Test output file
+	//Test output file
 	cout << endl << "Saving graph..." << endl;
 	ofstream ffo; ffo.open("test_graph.txt");
 	if (ffo.fail()) { cout << "File could not be opened" << endl; return 1; }
@@ -43,7 +43,9 @@ int main() {
 	Graph fileGraph(ffi);
 
 	cout << endl << "Input file graph" << endl;
-	cout << fileGraph;*/
+	cout << fileGraph;
+
+
 
     //Test push_node
     list<Graph::Edge> newEdgeList;
@@ -68,7 +70,7 @@ int main() {
     cout << endl << "Adjacency list with new node" << endl;
     cout << testGraph << endl;
 
-
+*/
 	
     cout  << "Creating list of articles" << endl;
     
@@ -91,15 +93,6 @@ int main() {
     
     cout << endl;
 
-    cout << "===============================================" << endl;
-    cout << wg;
-    cout << "===============================================" << endl;
-
-
-
-
-/*
-
     cout << "Testing the management of the graph" << endl;
     cout << "Here is the graph as organizing wikipedia pages" << endl;
     cout << "===============================================" << endl;
@@ -111,26 +104,45 @@ int main() {
     Graph g = wg;
     cout << g;
     cout << "=====================================" << endl;
-    
-    
-    const string out_edge_file = "/Users/gcoman/out_graph.txt";
-    const string out_wiki_file = "/Users/gcoman/out_wiki.txt";
+
+    //Save files
+    const string out_edge_file = "./out_graph.txt";
+    const string out_wiki_file = "./out_wiki.txt";
     cout << endl << "Testing the file input and output:" << endl;
-    ofstream ffo_edge; ffo_edge.open(out_edge_file);
-    if(ffo_edge.fail()) { cout << "File " << out_edge_file << "could not be opened" << endl; return 1;}
-    ofstream ffo_wiki; ffo_wiki.open(out_wiki_file);
-    if(ffo_wiki.fail()) { cout << "File " << out_wiki_file << " could not be opened" << endl; return 1;}
-    wg.save_to_output_files(ffo_edge, ffo_wiki);
-    ffo_wiki.close();ffo_edge.close();
+    ofstream ffo_edge; 
+    ffo_edge.open(out_edge_file);
+    if(ffo_edge.fail()) { 
+        cout << "File " << out_edge_file << "could not be opened" << endl; 
+        return 1;
+    }
     
-    ifstream ffi_edge; ffi_edge.open(out_edge_file);
-    if(ffi_edge.fail()) { cout << "File " << out_edge_file << "could not be opened" << endl; return 1;}
-    ifstream ffi_wiki; ffi_wiki.open(out_wiki_file);
-    if(ffi_wiki.fail()) { cout << "File " << out_wiki_file << " could not be opened" << endl; return 1;}
+    ofstream ffo_wiki; 
+    ffo_wiki.open(out_wiki_file);
+    if(ffo_wiki.fail()) { 
+        cout << "File " << out_wiki_file << " could not be opened" << endl; 
+        return 1;
+    }
+
+    wg.save_to_output_files(ffo_edge, ffo_wiki);
+    ffo_wiki.close();
+    ffo_edge.close();
+    
+    ifstream ffi_edge; 
+    ffi_edge.open(out_edge_file);
+    if(ffi_edge.fail()) { 
+        cout << "File " << out_edge_file << "could not be opened" << endl;
+        return 1;
+    }
+    
+    ifstream ffi_wiki; 
+    ffi_wiki.open(out_wiki_file);
+    if(ffi_wiki.fail()) { 
+        cout << "File " << out_wiki_file << " could not be opened" << endl; 
+        return 1;
+    }
+    
     WikiGraph wg2(ffi_edge, ffi_wiki);
     ffi_edge.close();ffi_wiki.close();
-    
-    
     
     cout << "Here is the graph as organizing wikipedia pages" << endl;
     cout << "===============================================" << endl;
@@ -140,5 +152,5 @@ int main() {
     cout << "=====================================" << endl;
     Graph g2 = wg2;
     cout << g2;
-    cout << "=====================================" << endl;*/
+    cout << "=====================================" << endl;
 }
