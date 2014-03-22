@@ -298,27 +298,37 @@ void WikiGraph::push_page(WikiPage& wp){
 		//Check if the page exists in the title_to_node vector
 		if(title_to_node.count(page)){
 
-			//Open text file for WikiPage
-			ifstream fs_txt;
-			fs_txt.open(wp.txt_location);
-			if(fs_txt.fail()){
-				cout << "Failed to open text file" << endl;
-			}
-
 			//Add a new edge between the new wikipage and the linked page
 			Edge *newEdge = new Edge;
 			newEdge->origin = wp.ID;
 			newEdge->destination = title_to_node[page];
-			newEdge->weight = countOccurences(fs_txt, page);	
+
+			//Open text files for WikiPages
+			ifstream fs_txt;
+			fs_txt.open(wp.txt_location);
+			if(fs_txt.fail()){
+				cout << "Failed to open origin text file" << endl;
+			}
+
+			ifstream destination_txt;
+			destination_txt.open(node_to_wiki.at(title_to_node[page]).txt_location);
+			if(destination_txt.fail()){
+				cout << "Failed to open destination text file" << endl;
+			}
+
+			//The weight is the total occurrences on both pages
+			newEdge->weight = countOccurences(fs_txt, page) + countOccurences(destination_txt, wp.title);	
+			
+			//Close the files
+			fs_txt.close();
+			destination_txt.close();
 
 			if(newEdge->weight > 0){
 				edgeList.push_back(*newEdge);		
 			}
 
 			cout << newEdge->origin << " " << newEdge->destination << " " << newEdge->weight << endl;
-	
-			//Close the file
-			fs_txt.close();
+
 		}
 	}
 
@@ -334,14 +344,6 @@ void WikiGraph::save_to_output_files(ofstream& out_edges, ofstream& out_title_to
 
 //Overload the << operator in order to print the contents of the wikiGraph
 //Iterate through each of the adjacency lists and print out its edges
-/*
-	Output should take the form of:
-	Page "Chicago" -> New York:2, Toronto:5, Montreal:14, Miami:4
-	Page "Miami" -> Toronto:58, Chicago:4, Montreal:34
-	Page "Montreal" -> Chicago:14, Miami:34
-	Page "New York" -> Toronto:5, Chicago:2
-	Page "Toronto" -> New York:5, Chicago:5, Miami:58
-*/
 ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	
 	//Initialize variables
@@ -365,7 +367,6 @@ ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	int count = 1;		//Number of vertices printed
 
 	//Iterate through the vertices in the adjacency list
-	//for (list<Graph::Edge> edgeList : adj_list){
 	while(count < adj_list.size()){
 
 		wp = wikiGraph.node_to_wiki.at(index);
