@@ -76,6 +76,12 @@ int main() {
     
     WikiGraph wg;
 
+    wg.push_page(make_wiki_page(path + "wiki/wp/m/Montreal.htm",
+                                path + "wiki/text/Montreal.txt"));
+
+    wg.push_page(make_wiki_page(path + "wiki/wp/m/Miami%2C_Florida.htm",
+                                path + "wiki/text/Miami%2C_Florida.txt"));
+
     wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
                                 path + "wiki/text/New_York_City.txt"));   
 
@@ -85,11 +91,8 @@ int main() {
     wg.push_page(make_wiki_page(path + "wiki/wp/t/Toronto.htm",
                                 path + "wiki/text/Toronto.txt"));
 
-    wg.push_page(make_wiki_page(path + "wiki/wp/m/Montreal.htm",
-                                path + "wiki/text/Montreal.txt"));
 
-    wg.push_page(make_wiki_page(path + "wiki/wp/m/Miami%2C_Florida.htm",
-                                path + "wiki/text/Miami%2C_Florida.txt"));
+
     
     cout << endl;
 

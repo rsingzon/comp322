@@ -53,15 +53,6 @@ Graph::Graph(list<Edge> lst, int num_vertices){
 		adj_list.push_back(edgeList);
 
 	}
-		cout << endl << "Size of adj_list: " << adj_list.size() << endl;
-
-		for (list<Edge> edgeList : adj_list){
-			for (Edge edge : edgeList){
-				
-				cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
-			}
-			cout << endl;
-		}
 }
 
 //Constructor for graph class using an input file
@@ -127,10 +118,6 @@ Graph::Graph(ifstream& in_file){
 		index++;
 	}
 
-	for (Edge edge : edgeList){
-		cout << edge.origin << " " << edge.destination << " " << edge.weight << endl ;
-	}
-
 	//Create a new graph using the list of edges and the number of vertices
 	Graph tempGraph(edgeList, numVertices);
 	adj_list = tempGraph.get_adj_list();
@@ -140,7 +127,7 @@ Graph::Graph(ifstream& in_file){
 //Destructor for graph object
 Graph::~Graph(){
 	/**
-	 * All of the memory for the graph object is allocated on the stack,
+	 * All of the memory for the Graph object is allocated on the stack,
 	 * therefore, it is automatically de-allocated once the the program returns
 	 * from the function in which is was created.  Thus, there is no need to 
 	 * de-allocate memory in the destructor
@@ -211,7 +198,6 @@ void Graph::save_to_output_file(ofstream& o_edges) const{
             	existingEdges.push_back(edge);
                
                 o_edges << edge.origin << " " << edge.destination << " " << edge.weight << endl;
-                cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
             }
 		}
 	}
