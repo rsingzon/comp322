@@ -23,12 +23,12 @@ WikiGraph::WikiGraph(ifstream& in_file_edges, ifstream& in_file_wiki_info) : Gra
         getline(in_file_wiki_info, ss);
         if (ss.length() == 0) break;
         WikiPage new_page;
-       /* new_page.ID = stoi(ss);
+        new_page.ID = stoi(ss);
         getline(in_file_wiki_info, new_page.title);
         getline(in_file_wiki_info, new_page.html_location);
         getline(in_file_wiki_info, new_page.txt_location);
         lst.push_back(new_page);
-        largest_index = (largest_index < new_page.ID) ? new_page.ID : largest_index;*/
+        largest_index = (largest_index < new_page.ID) ? new_page.ID : largest_index;
     }
     node_to_wiki.resize(largest_index+1);
     for(auto& x : lst) {

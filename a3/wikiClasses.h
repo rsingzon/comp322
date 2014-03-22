@@ -60,8 +60,6 @@ public:
     void save_to_output_file(ofstream& o_edges) const;
 };
 
-
-
 /* WikiGraph : class that implements a graph of Wikipedia pages. It extends Graph
  privately, and provides interface methods for adding and removing pages from the graph.*/
 class WikiGraph : public Graph {

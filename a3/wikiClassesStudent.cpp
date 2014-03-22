@@ -135,7 +135,12 @@ Graph::Graph(ifstream& in_file){
 
 //Destructor for graph object
 Graph::~Graph(){
-
+	/**
+	 * All of the memory for the graph object is allocated on the stack,
+	 * therefore, it is automatically de-allocated once the the program returns
+	 * from the function in which is was created.  Thus, there is no need to 
+	 * de-allocate memory in the destructor
+	 */ 
 }
 
 //Overload the << operator in order to print the contents of the graph
@@ -172,15 +177,7 @@ ostream& operator<< (ostream& o, Graph const& g){
 
 void Graph::save_to_output_file(ofstream& o_edges) const{
 	//Keep track of which edges have already been saved in a 2D array
-	vector<vector<int>> savedEdges;
-
-	for (int i = 0; i < adj_list.size(); i++){
-		vector<int> column;
-		for (int j = 0; j < adj_list.size(); j++){
-			column.push_back(0);
-		}
-		savedEdges.push_back(column);
-	}
+	list<Edge> existingEdges;
 		
 	//Iterate through the lists of edges for each vertex
 	for (list<Edge> edgeList : adj_list){
@@ -189,32 +186,42 @@ void Graph::save_to_output_file(ofstream& o_edges) const{
 		for (Edge edge : edgeList){
             bool isEdgeSaved = false;
 
-            if (savedEdges.at(edge.origin).at(edge.destination) == 1){
-                isEdgeSaved = true;
-            }
-            
-            if(savedEdges.at(edge.destination).at(edge.origin) == 1){
-                isEdgeSaved = true;
+            //Check if the edge has already been saved
+            for(Edge savedEdge : existingEdges){
+            	if(savedEdge.origin == edge.origin && savedEdge.destination == edge.destination){
+            		isEdgeSaved = true;
+            	} 
+            	else if(savedEdge.origin == edge.destination && savedEdge.destination == edge.origin){
+            		isEdgeSaved = true;
+            	}
             }
             
             //If the edge has not already been saved, save it
             if(!isEdgeSaved){
-                savedEdges.at(edge.origin).at(edge.destination) = 1;
-				savedEdges.at(edge.destination).at(edge.origin) = 1;
+            	existingEdges.push_back(edge);
+               
                 o_edges << edge.origin << " " << edge.destination << " " << edge.weight << endl;
                 cout << edge.origin << " " << edge.destination << " " << edge.weight << endl;
             }
-
-			//Avoid duplicating edges by only adding edges whose origins are less than their destinations
-			/*if (edge.origin < edge.destination){
-				o_edges << edge.origin << " " << edge.destination << " " << edge.weight << endl;
-			}*/
 		}
 	}
 }
 
+//Creates a new node in the existing graph and adds edges to the adjacency list
 void Graph::push_node(list<Edge>& lst){
 
+	//Add each edge to the destination vertex 
+	for(Edge edge : lst){
+		//Get the list of edges for the destination vertex
+		list<Edge> vertexList = adj_list.at(edge.destination-1);
+		
+		//Add edge to list and update the adjacency list in the graph
+		vertexList.push_back(edge);
+		adj_list.at(edge.destination - 1) = vertexList;
+	}
+
+	//Add the new vertex to the adjacency list
+	adj_list.push_back(lst);
 }
 
 /**
@@ -226,9 +233,67 @@ WikiGraph::~WikiGraph(){
 
 }
 
+//Creates a new WikiPage from HTML and text source files
+WikiGraph::WikiPage& make_wiki_page(string path_to_html, string path_to_txt){
+	
+	//Dynamically allocate memory for the WikiPage.  Remember to DELETE!
+	WikiGraph::WikiPage *page = new WikiGraph::WikiPage;
+	WikiGraph::WikiPage &pageRef = *page;
+	page->ID = 0;
 
+	//Open a file stream to read the page title from the HTML source
+	ifstream ffi;
+	ffi.open(path_to_html);
+	
+	//Find the title of the page using the input stream
+	page->title = getPageTitle(ffi);
+	ffi.close();
+	cout << "Title: " << page->title << endl;	
+
+	//Set the file paths
+	page->html_location = path_to_html;
+	page->txt_location = path_to_txt;
+
+	return pageRef;
+}
+
+//Adds a new WikiPage to the graph
 void WikiGraph::push_page(WikiPage& wp){
 
+	//Find the next available ID in the graph
+	int id = adj_list.size() + 1;
+	
+	//If the node is still the default page, then replace it with the new page
+	if(id == 2){
+		if(node_to_wiki.back().title == ""){
+			id = 1;
+		}
+	}
+
+	//Set the ID of the WikiPage
+	wp.ID = id;
+
+	//Open the HTML file for the WikiPage
+	ifstream ffi;
+	ffi.open(wp.html_location);
+	if (ffi.fail()) { 
+		cout << "Failed to open file" << endl; 
+	}
+
+	//Obtain the set of linked pages
+	set<string> linkedPages = allAssociations(ffi);
+	
+	//Build a list of edges that are related to the WikiPage
+	list<Edge> edgeList;
+
+	//For all links in the WikiPage, find the weight between the edge
+	for(string page : linkedPages){
+		int occurrences = countOccurrences(ffi, page);
+		
+	}
+
+	
+	ffi.close();	
 }
 
 // Comment
@@ -291,14 +356,4 @@ ostream& operator<< (ostream& o, WikiGraph const& wikiGraph){
 	
 	o << "Poopsalot\n";
 	return o;
-}
-
-/*
- * Other methods
- */
-
-
-
-WikiGraph::WikiPage& make_wiki_page(string path_to_html, string path_to_txt){
-
 }

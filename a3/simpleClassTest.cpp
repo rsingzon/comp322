@@ -28,44 +28,74 @@ int main() {
 	cout << "Contents of graph" << endl;
 	cout << testGraph;
 
-	//Test output file
+/*	//Test output file
 	cout << endl << "Saving graph..." << endl;
 	ofstream ffo; ffo.open("test_graph.txt");
 	if (ffo.fail()) { cout << "File could not be opened" << endl; return 1; }
 	testGraph.save_to_output_file(ffo);
 	ffo.close();
 
-	////Open saved file
-	//cout << endl << "Loading graph..." << endl;
-	//ifstream ffi;
-	//ffi.open("test_graph.txt");
-	//if (ffi.fail()) { cout << "File could not be opened" << endl; return 1; }
-	//Graph fileGraph(ffi);
+	//Open saved file
+	cout << endl << "Loading graph..." << endl;
+	ifstream ffi;
+	ffi.open("test_graph.txt");
+	if (ffi.fail()) { cout << "File could not be opened" << endl; return 1; }
+	Graph fileGraph(ffi);
 
-	//cout << endl << "Input file graph" << endl;
-	//cout << fileGraph;
+	cout << endl << "Input file graph" << endl;
+	cout << fileGraph;*/
 
-	/*
+    //Test push_node
+    list<Graph::Edge> newEdgeList;
+    Graph::Edge newE1 = { 6, 4, 5 };
+    Graph::Edge newE2 = { 6, 2, 2 };
+    Graph::Edge newE3 = { 6, 2, 5 };
+    Graph::Edge newE4 = { 6, 5, 58 };
+    Graph::Edge newE5 = { 6, 3, 14 };
+    Graph::Edge newE6 = { 6, 2, 4 };
+    Graph::Edge newE7 = { 6, 3, 34 };
+
+    newEdgeList.push_back(newE1);
+    newEdgeList.push_back(newE2);
+    newEdgeList.push_back(newE3);
+    newEdgeList.push_back(newE4);
+    newEdgeList.push_back(newE5);
+    newEdgeList.push_back(newE6);
+    newEdgeList.push_back(newE7);
+
+    testGraph.push_node(newEdgeList);
+
+    cout << endl << "Adjacency list with new node" << endl;
+    cout << testGraph << endl;
+
+
+	
     cout  << "Creating list of articles" << endl;
     
     WikiGraph wg;
-	wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
+	
+    wg.push_page(make_wiki_page(path + "wiki/wp/n/New_York_City.htm",
                                 path + "wiki/text/New_York_City.txt"));
+    cout << endl;
     wg.push_page(make_wiki_page(path + "wiki/wp/c/Chicago.htm",
                                 path + "wiki/text/Chicago.txt"));
+    cout << endl;
     wg.push_page(make_wiki_page(path + "wiki/wp/t/Toronto.htm",
                                 path + "wiki/text/Toronto.txt"));
+    cout << endl;
     wg.push_page(make_wiki_page(path + "wiki/wp/m/Montreal.htm",
                                 path + "wiki/text/Montreal.txt"));
+    cout << endl;
     wg.push_page(make_wiki_page(path + "wiki/wp/m/Miami%2C_Florida.htm",
                                 path + "wiki/text/Miami%2C_Florida.txt"));
+    cout << endl;
     
     cout << "Testing the management of the graph" << endl;
     cout << "Here is the graph as organizing wikipedia pages" << endl;
     cout << "===============================================" << endl;
     cout << wg;
     cout << "===============================================" << endl;
-	
+	/*
 	cout << "Here is the underlying abstract graph" << endl;
     cout << "=====================================" << endl;
     Graph g = wg;
