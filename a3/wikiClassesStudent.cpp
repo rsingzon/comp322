@@ -241,26 +241,13 @@ void Graph::push_node(list<Edge>& lst){
 // Destructor for the WikiGraph class
 WikiGraph::~WikiGraph(){
 
-	cout << "Deleting wikigraph" << endl;
-	bool first = true;
-
-
-/*
-	for(WikiPage page : node_to_wiki){
-		if(first){
-			first = false;
-			continue;
-		}
-		delete &page;
-	}
-
-	for(list<Edge> edgeList : adj_list){
-		for(Edge edge : edgeList){
-			delete &edge;
-		}
-
-	}*/
-
+	/* All of the fields in the WikiGraph constructor are automatically deleted
+	 * since they are created on the stack.
+	 * The WikiPages are stored in free memory, but when it is used as a parameter to the 
+	 * push_page function, its data is copied to the node_to_wiki vector.  Thus the pointer 
+	 * to the free memory is not accessible in the WikiGraph class, and each WikiPage
+	 * must be deleted in the function in which it was initially created.
+	 */
 }
 
 //Creates a new WikiPage from HTML and text source files
@@ -319,9 +306,9 @@ void WikiGraph::push_page(WikiPage& wp){
 		if(title_to_node.count(page)){
 
 			//Add a new edge between the new wikipage and the linked page
-			Edge *newEdge = new Edge;
-			newEdge->origin = wp.ID;
-			newEdge->destination = title_to_node[page];
+			Edge newEdge;
+			newEdge.origin = wp.ID;
+			newEdge.destination = title_to_node[page];
 
 			//Open text files for WikiPages
 			ifstream fs_txt;
@@ -337,18 +324,15 @@ void WikiGraph::push_page(WikiPage& wp){
 			}
 
 			//The weight is the total occurrences on both pages
-			newEdge->weight = countOccurences(fs_txt, page) + countOccurences(destination_txt, wp.title);	
+			newEdge.weight = countOccurences(fs_txt, page) + countOccurences(destination_txt, wp.title);	
 			
 			//Close the files
 			fs_txt.close();
 			destination_txt.close();
 
-			if(newEdge->weight > 0){
-				edgeList.push_back(*newEdge);		
+			if(newEdge.weight > 0){
+				edgeList.push_back(newEdge);		
 			}
-
-			cout << newEdge->origin << " " << newEdge->destination << " " << newEdge->weight << endl;
-
 		}
 	}
 
