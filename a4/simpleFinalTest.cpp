@@ -13,13 +13,12 @@ using namespace std;
 
 // change PATH to the location of the folder where you have saved
 // the resources for this homework
-const string PATH = "/Users/gcoman/Documents/wiki_cs322";
+const string PATH = "";
 
 string file_input_graph_edges = PATH + "/wg_edges.txt";
 string file_input_graph_wikis = PATH + "/wg_wikis.txt";
 
 void generate_all_pages();
-
 
 int main2() {
     cout  << "Read list of articles from file" << endl;
@@ -38,6 +37,14 @@ int main() {
         // if you want to read the graph using your own code,
         // change the boolean to false.
         bool read_graph_file = true;
+
+        cout << "Hello\n" << endl;
+    }
+    catch(int x){
+        
+    }
+
+        /*
         if(read_graph_file) {
             cout  << "Read list of articles from file" << endl;
             ifstream ifedge; ifedge.open(file_input_graph_edges);
@@ -105,6 +112,7 @@ int main() {
     }
     
     return 0;
+    */
 }
 
 
