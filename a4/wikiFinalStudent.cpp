@@ -8,6 +8,7 @@
 */
 
 #include "wikiFinal.h"
+#include <stdexcept>
 
 
 /* Samples an edge from the given list by using the 
@@ -19,14 +20,13 @@ Graph::Edge sampleEdge(list<Graph::Edge> lst){
 	int index = 0;
 	vector<int> cumul;
 	
-
 	//Find the total weight from the sum of weights of each edge
 	for (list<Graph::Edge>::iterator it = lst.begin(); it != lst.end(); ++it){
 		
 		//Check if any edges have weight <= 0
 		try{
 			if(it->weight <= 0){
-				throw index;
+				throw invalid_argument("An edge in the edge list has weight less than or equal to zero");
 			} 
 			else{
 				//Update the current weight and add the current weight to the vector
@@ -35,13 +35,15 @@ Graph::Edge sampleEdge(list<Graph::Edge> lst){
 				index++;
 			}
 		}
-		catch(int index){
-			cerr << "Index %d of edge list has weight less than or equal to zero." << endl;
+		catch(const invalid_argument& e){
+			//cerr << "Index " << index << " of edge list has weight less than or equal to zero." << endl;
 		}
 	}
 
 	//Obtain a random number between 0 and totalWeight-1
 	int randNum = (rand() % totalWeight-1);
+
+	cout << "Random integer: " << randNum << endl;
 	
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
 	for(int k = 1; k < cumul.size(); k++){
@@ -56,11 +58,24 @@ Graph::Edge sampleEdge(list<Graph::Edge> lst){
 	return sampleEdge;
 }
 
+
+//Traverse the graph rw_num_walks times with walks of length rw_walk_length
 map<int, int> Graph::random_walks(int start_node) const{
 	map<int, int> walk;
+ 	vector<list<Edge>> adj_list = get_adj_list();
 
+ 	int walkCount = 0;
+ 	int lengthCount = 0;
+
+ 	//Perform rw_num_walk walks
+ 	for(walkCount = 0; walkCount < get_num_walks(); walkCount++){
+
+ 		//Visit rw_walk_length nodes
+ 		for(lengthCount = 0; lengthCount < get_walk_length(); lengthCount++){
+
+  		}
+ 	}
 	
-
 	return walk;
 }
 
