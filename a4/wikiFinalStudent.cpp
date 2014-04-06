@@ -97,18 +97,87 @@ map<int, int> Graph::random_walks(int start_node) const{
  			}
   		}
  	}
-	
 	return walk;
 }
 
+//Performs a breadth first search to find nodes related to start_node
 list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
+	vector<list<Graph::Edge>> adj_list = get_adj_list();
 	list<int> nodeList;
+	set<int> elementsToReturn;	//Keeps elements that should be returned
+	queue<int> waitList;		//Keeps a list of nodes to be added to the set
+	int count = 1;				//Number of nodes visited
+	
+	//Add the first to the queue and set of added nodes
+	waitList.push(start_node);
+	elementsToReturn.insert(start_node);
+
+	try{
+		
+		//Check if the start node is invalid
+		if(start_node <= 0 || start_node > adj_list.size()){
+			throw invalid_graph_id(start_node);
+		}
+
+		//Check if the number of nodes is less than or equal to zero
+		if(number_nodes <= 0){
+			throw invalid_param("The number of nodes used for the BFS is less than or equal to zero");
+		}
+	
+		while(!waitList.empty() && count >= number_nodes){
+
+			//Get the next node in the queue
+			int currentNode = waitList.front();
+			waitList.pop();
+
+			//Add current node to list
+			nodeList.push_back(currentNode);
+
+			//Increment the number of nodes added to the list
+			count++;
+
+			//Iterate through each of the neighbours of the current node
+			int neighbour;
+			list<Graph::Edge> edgeList = adj_list.at(currentNode);
+
+			for(Graph::Edge edge : edgeList){
+
+				//Get the ID of the neighbouring node
+				neighbour = edge.origin == currentNode ? edge.destination : edge.origin;
+
+				//Add neighbours to queue if they have not already been added
+				if(elementsToReturn.count(neighbour) == 0){
+					waitList.push(neighbour);
+					elementsToReturn.insert(neighbour);
+				}
+			}
+		}	
+	}
+	/////*****TODO: Why are the references to the exceptions constants?
+	catch(const invalid_graph_id& e){
+
+	}
+	catch(const invalid_param& e){
+
+	}
 
 	return nodeList;
 }
 
 list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 	list<int> spanningTree;
+	set<int> elementsToReturn;
+	priority_queue<Edge> waitList;
+
+	try{
+
+	}
+	catch(const invalid_graph_id& e){
+
+	}
+	catch(const invalid_param& e){
+
+	}
 
 	return spanningTree;
 }
