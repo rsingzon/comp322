@@ -8,13 +8,12 @@
 */
 
 #include "wikiFinal.h"
-#include <stdexcept>
 
 
 /* Samples an edge from the given list by using the 
  * weights of each edge as the histogram for the 
  * distribution to be sampled */
-Graph::Edge sampleEdge(list<Graph::Edge> lst){
+Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 	Graph::Edge sampleEdge;
 	int totalWeight;
 	int index = 0;
@@ -26,7 +25,7 @@ Graph::Edge sampleEdge(list<Graph::Edge> lst){
 		//Check if any edges have weight <= 0
 		try{
 			if(it->weight <= 0){
-				throw invalid_argument("An edge in the edge list has weight less than or equal to zero");
+				throw invalid_param("Edge weight less than or equal to zero");
 			} 
 			else{
 				//Update the current weight and add the current weight to the vector
@@ -35,7 +34,7 @@ Graph::Edge sampleEdge(list<Graph::Edge> lst){
 				index++;
 			}
 		}
-		catch(const invalid_argument& e){
+		catch(const invalid_param& e){
 			//cerr << "Index " << index << " of edge list has weight less than or equal to zero." << endl;
 		}
 	}
@@ -43,7 +42,7 @@ Graph::Edge sampleEdge(list<Graph::Edge> lst){
 	//Obtain a random number between 0 and totalWeight-1
 	int randNum = (rand() % totalWeight-1);
 
-	cout << "Random integer: " << randNum << endl;
+	//cout << "Random integer: " << randNum << endl;
 	
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
 	for(int k = 1; k < cumul.size(); k++){
@@ -73,6 +72,29 @@ map<int, int> Graph::random_walks(int start_node) const{
  		//Visit rw_walk_length nodes
  		for(lengthCount = 0; lengthCount < get_walk_length(); lengthCount++){
 
+ 			list<Edge> edgeList = adj_list.at(start_node);
+ 			Edge newEdge = sampleEdge(edgeList);
+
+ 			try{
+ 				//Check if the start node is invalid
+ 				if(newEdge.origin != start_node){
+	 				throw invalid_graph_id(newEdge.origin);
+ 				}
+
+ 				//Increment the number of times the node has been visited
+ 				if(walk.count(start_node)){
+ 					int timesVisited = walk[start_node];	
+ 					timesVisited++;
+ 					walk[start_node] = timesVisited;
+ 				}
+ 				else{
+ 					walk[start_node] = 1;
+ 				}
+
+ 			}
+ 			catch(const invalid_graph_id& e){
+
+ 			}
   		}
  	}
 	
