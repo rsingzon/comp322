@@ -46,15 +46,12 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 	
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
 	for(int k = 0; k < cumul.size(); k++){
-	
-		cout << "Cumul[" << k << "]:" << cumul.at(k) << endl;
 
 		if(k == 0){
 			if(randNum <= cumul.at(k)){
 				list<Graph::Edge>::iterator it = lst.begin();
 	    		advance(it, k);
 				sampleEdge = *it;
-				cout << "GOT AT ZERO" << endl;
 				return sampleEdge;
 			}
 			
@@ -64,7 +61,6 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 				list<Graph::Edge>::iterator it = lst.begin();
 	    		advance(it, k);
 				sampleEdge = *it;
-				cout << "GOT AT "<<k << endl;
 				return sampleEdge;
 				
 			}	
@@ -90,7 +86,7 @@ map<int, int> Graph::random_walks(int start_node) const{
 
  		//Visit rw_walk_length nodes
  		for(lengthCount = 0; lengthCount < get_walk_length(); lengthCount++){
- 			cout << endl<< "Start node: " << currentNode << endl;
+
 
  			list<Edge> edgeList = adj_list.at(currentNode);
  			Edge newEdge = sampleEdge(edgeList);
@@ -104,7 +100,6 @@ map<int, int> Graph::random_walks(int start_node) const{
 	 				throw invalid_graph_id(newEdge.origin);
  				}
 
- 				cout << "Destination " << newEdge.destination << endl;
  				currentNode = newEdge.destination;
 
 
@@ -152,7 +147,7 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 		waitList.push(start_node);
 		elementsToReturn.insert(start_node);
 	
-		while(!waitList.empty() && count >= number_nodes){
+		while(!waitList.empty() && count <= number_nodes){
 
 			//Get the next node in the queue
 			int currentNode = waitList.front();
@@ -188,36 +183,68 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 
 	}
 
+
 	return nodeList;
 }
 
 list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
-	list<int> spanningTree;			//Spanning tree to return
+	list<int> nodeList;				//Spanning tree to return
 	set<int> elementsToReturn;		//IDs of nodes already in the spanning tree
 	priority_queue<Edge> waitList;	//Priority queue holding nodes to be added to the tree
 	int count = 1;					//Number of nodes in the spanning tree
 
 	vector<list<Graph::Edge>> adj_list = get_adj_list();
 
-	try{
 
-		//Check that the start node is valid
+	try{
+		
+		//Check if the start node is invalid
 		if(start_node <= 0 || start_node > adj_list.size()){
 			throw invalid_graph_id(start_node);
 		}
 
-		//Check that the number of nodes is greater than zero
+		//Check if the number of nodes is less than or equal to zero
 		if(number_nodes <= 0){
-			throw invalid_param("The number of nodes for the spanning tree is less than or equal to zero");
+			throw invalid_param("The number of nodes used for the BFS is less than or equal to zero");
 		}
 
-		//Add the neighbours of the start node to the priority queue
+		//Add the neighbours of the start node to the queue
 		for(Graph::Edge edge : adj_list.at(start_node)){
 			waitList.push(edge);
 		}
+		elementsToReturn.insert(start_node);
+	
+		while(!waitList.empty() && count <= number_nodes){
 
-	elementsToReturn.insert(start_node);
+			//Get the next node in the queue
+			int currentNode = waitList.top().destination;
+			waitList.pop();
 
+			//Add current node to list
+			nodeList.push_back(currentNode);
+
+			//Increment the number of nodes added to the list
+			count++;
+
+			//Iterate through each of the neighbours of the current node
+			int neighbour;
+			list<Graph::Edge> edgeList = adj_list.at(currentNode);
+
+			for(Graph::Edge edge : edgeList){
+
+				//Get the ID of the neighbouring node
+				neighbour = edge.origin == currentNode ? edge.destination : edge.origin;
+
+				//Add neighbours to queue if they have not already been added
+				if(elementsToReturn.count(neighbour) == 0){
+					
+					for(Graph::Edge edge : adj_list.at(neighbour)){
+						waitList.push(edge);	
+					}
+					elementsToReturn.insert(neighbour);
+				}
+			}
+		}
 	}
 	catch(const invalid_graph_id& e){
 
@@ -225,21 +252,26 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 	catch(const invalid_param& e){
 
 	}
+	catch(const exception& e){
+		cout << " I have an error" << endl;
+	}
 
-	return spanningTree;
+	return nodeList;
 }
 
 //Destructor for the Graph class
 Graph::~Graph(){
-
+	/* This destructor does not need to do anything because the WikiGraph class
+	 * does not dynamically allocate memory onto the heap, and thus all of its 
+	 * fields are deleted 
+	 */
 }
 
 //Destructor for the WikiGraph class
 WikiGraph::~WikiGraph(){
-
-	/* This destructor does not need to do anything because the WikiGraph class
-	 * does not dynamically allocate memory onto the heap, and thus all of its 
-	 * fields are deleted 
+	/**
+	 * As with the Graph class, no memory was dynamically allocated,
+	 * thus nothing needs to be freed in the destructor.
 	 */
 }
 
@@ -307,15 +339,26 @@ void generate_all_pages()
     fout.close();
 }
 
-//Creates a graph from input files -- Copied from simpleClassTest.cpp
-void createGraph(){
+//Displays messages and accepts commands on the command line
+void displayInterface(){
+    WikiGraph wg;
+    bool valid = false;
+    int relatedPages;
+    int subgraphSize;
+    int numWalks;
+    int walkLength;
+    char input[100];
 
-	const string PATH = "/home/singzon/Development/comp322/a4";
+    cout << "Welcome to the Wikipedia page traversal system!" << endl;
+
+    //Create the graphs -- copied from simpleFinalTest.cpp
+    //Change the path to the correct one on target machine
+    const string PATH = "/home/singzon/Development/comp322/a4";
 	string file_input_graph_edges = PATH + "/wg_edges.txt";
 	string file_input_graph_wikis = PATH + "/wg_wikis.txt";
 
 	try {
-        WikiGraph wg;
+        
         // if you want to read the graph using your own code,
         // change the boolean to false.
         bool read_graph_file = true;
@@ -357,19 +400,8 @@ void createGraph(){
     catch (my_exception& ex) {
         cout << ex.get_error_message() << endl;
     }
-}
 
-//Displays messages and accepts commands on the command line
-void displayInterface(){
-    WikiGraph wg;
-    bool valid = false;
-    int relatedPages;
-    int subgraphSize;
-    int numWalks;
-    int walkLength;
-    string articleName;
 
-    cout << "Welcome to the Wikipedia page traversal system!" << endl;
 
     while(true){
     	cout << "Please enter the number of related pages you would like to retrieve: " << endl;
@@ -384,14 +416,16 @@ void displayInterface(){
 	    cout << "Please enter the length of each walk: " << endl;
 	    isIntegerGreaterThanZero(walkLength);
 
-	    cout << "Please enter the name of a Wikipedia article: " << endl;
-	    cin >> articleName;	
+	    cout << "Please enter the name of a Wikipedia article: (Type exit to quit) " << endl;
+	    cin.getline(input, 100);
+	    string articleName(input);
 
 	    //Exit if the user types exit
-	    transform(articleName.begin(), articleName.end(), articleName.begin(), ::tolower);
 	    if(articleName.compare("exit") == 0){
 	    	break;
 	    }
+
+	    cout << "Your request: " << articleName << endl;
 
 		
 		//Print the results from the search        	
