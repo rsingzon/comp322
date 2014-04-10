@@ -24,9 +24,7 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 	
 	//Find the total weight from the sum of weights of each edge
 	for (Graph::Edge edge : lst){
-		
-		cout << edge.destination << ": " << edge.weight << endl;
-
+	
 		//Check if any edges have weight <= 0
 		try{
 			if(edge.weight <= 0){
@@ -49,23 +47,29 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
 	for(int k = 0; k < cumul.size(); k++){
 	
+		cout << "Cumul[" << k << "]:" << cumul.at(k) << endl;
 
 		if(k == 0){
 			if(randNum <= cumul.at(k)){
 				list<Graph::Edge>::iterator it = lst.begin();
 	    		advance(it, k);
 				sampleEdge = *it;
+				cout << "GOT AT ZERO" << endl;
+				return sampleEdge;
 			}
+			
 		}
 		else{
 			if(randNum <= cumul.at(k) && randNum > cumul.at(k-1)){
 				list<Graph::Edge>::iterator it = lst.begin();
 	    		advance(it, k);
 				sampleEdge = *it;
+				cout << "GOT AT "<<k << endl;
+				return sampleEdge;
+				
 			}	
 		}
 	}
-
 	return sampleEdge;
 }
 
@@ -79,13 +83,14 @@ map<int, int> Graph::random_walks(int start_node) const{
  	int lengthCount = 0;
 
 
-
  	//Perform rw_num_walk walks
  	for(walkCount = 0; walkCount < get_num_walks(); walkCount++){
 
+ 		currentNode = start_node;
+
  		//Visit rw_walk_length nodes
  		for(lengthCount = 0; lengthCount < get_walk_length(); lengthCount++){
- 			 	cout << "Start node: " << start_node << endl;
+ 			cout << endl<< "Start node: " << currentNode << endl;
 
  			list<Edge> edgeList = adj_list.at(currentNode);
  			Edge newEdge = sampleEdge(edgeList);
@@ -95,6 +100,13 @@ map<int, int> Graph::random_walks(int start_node) const{
  				if(newEdge.origin != currentNode){
 	 				throw invalid_graph_id(newEdge.origin);
  				}
+ 				if(newEdge.origin < 0 || newEdge.destination < 0 || newEdge.weight < 0){
+	 				throw invalid_graph_id(newEdge.origin);
+ 				}
+
+ 				cout << "Destination " << newEdge.destination << endl;
+ 				currentNode = newEdge.destination;
+
 
  				//Increment the number of times the node has been visited
  				if(walk.count(currentNode)){
@@ -169,7 +181,6 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 			}
 		}	
 	}
-	/////*****TODO: Why are the references to the exceptions constants?
 	catch(const invalid_graph_id& e){
 
 	}
