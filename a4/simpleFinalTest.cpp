@@ -32,25 +32,19 @@ int main2() {
 
 void displayInterface(string PATH);
 int main() {
-   
-    
-   try {
+    try {
         WikiGraph wg;
         // if you want to read the graph using your own code,
         // change the boolean to false.
         bool read_graph_file = true;
-        
-
-        
         if(read_graph_file) {
             cout  << "Read list of articles from file" << endl;
             ifstream ifedge; ifedge.open(file_input_graph_edges);
             ifstream ifwiki; ifwiki.open(file_input_graph_wikis);
             WikiGraph new_g(ifedge,ifwiki);
             wg = new_g;
-        }
-        
-        else {
+            
+        }else {
             cout  << "Creating list of articles" << endl;
             generate_all_pages();
             
@@ -77,15 +71,40 @@ int main() {
             ofstream ofwiki; ofwiki.open(PATH + "/wg_wikis.txt");
             wg.save_to_output_files(ofedge, ofwiki);
         }
-    }
-
-    catch (my_exception& ex) {
+        
+        int num_results = 10;
+        int size_graph = 100;
+        while (true) {
+            try {
+                cout << "Please enter a page to study (type exit to stop):";
+                char input[100];
+                cin.getline(input, 100);
+                string start_page(input);
+                if(start_page == "exit") break;
+                cout << "-------------------" << endl;
+                cout << "Results using full graph random walks" << endl;
+                cout << "-------------------" << endl;
+                wg.print_related_pages(start_page, num_results);
+                cout << "-------------------" << endl;
+               /* cout << "Results using random walks on DFS subgraph" << endl;
+                cout << "-------------------" << endl;
+                wg.print_related_bfs(start_page, num_results, size_graph);
+                cout << "-------------------" << endl;
+                cout << "Results using random walks on Spanning Tree subgraph" << endl;
+                cout << "-------------------" << endl;
+                wg.print_related_spanning_tree(start_page, num_results, size_graph);
+                cout << "-------------------" << endl;*/
+                break; // if search was succesful
+            }catch (my_exception& ex) {
+                cout << ex.get_error_message() << endl;
+            }
+        }
+    } catch (my_exception& ex) {
         cout << ex.get_error_message() << endl;
     }
-
-    displayInterface(PATH);    
+    
     return 0;
-
+}
 /*
     list<Graph::Edge> edgeList;
         Graph::Edge e1 = { 1, 4, 5 };
@@ -112,44 +131,3 @@ int main() {
         Graph::Edge sampledEdge = testGraph.sampleEdge(edgeList);*/
 
     
-}
-
-
-
-
-void generate_all_pages()
-{
-    vector<pair<string, string> > all_ins;
-    string path_to_txt = "wpcd/plaintext_articles";
-    ifstream ff; ff.open(PATH + "/wpcd/all_txt.txt");
-    
-    set<string> all_texts;
-    
-    while (!ff.eof()) {
-        string new_path_html;
-        getline(ff, new_path_html);
-        string s = new_path_html;
-        s = s.substr(s.find_last_of("/") + 1, s.length());
-        s = s.substr(0, s.find_last_of("."));
-        all_texts.insert(s);
-    }
-    ff.close();
-    ff.open( PATH + "/wpcd/all_htm.txt");
-    ofstream fout; fout.open( PATH + "/wpcd/all_pages.txt");
-    
-    while (!ff.eof()) {
-        string new_path_html;
-        getline(ff, new_path_html);
-        if(new_path_html.length() == 0) continue;
-        string s = new_path_html;
-        s = s.substr(s.find_last_of("/") + 1, s.length());
-        s = s.substr(0, s.find_last_of("."));
-        if(all_texts.find(s) != all_texts.end()) {
-            fout << "wpcd/" + new_path_html << endl;    
-            fout << path_to_txt << "/" << s << ".txt" << endl;
-        }
-    }
-    ff.close();
-    fout.close();
-}
-
