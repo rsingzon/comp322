@@ -16,79 +16,94 @@
 Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 	Graph::Edge sampleEdge;
 	int totalWeight;
-	int index = 0;
 	vector<int> cumul;
+
+	for (int x : cumul){
+
+	}
 	
 	//Find the total weight from the sum of weights of each edge
-	for (list<Graph::Edge>::iterator it = lst.begin(); it != lst.end(); ++it){
+	for (Graph::Edge edge : lst){
 		
+		cout << edge.destination << ": " << edge.weight << endl;
+
 		//Check if any edges have weight <= 0
 		try{
-			if(it->weight <= 0){
+			if(edge.weight <= 0){
 				throw invalid_param("Edge weight less than or equal to zero");
 			} 
 			else{
 				//Update the current weight and add the current weight to the vector
-				totalWeight += it->weight;
+				totalWeight += edge.weight;
 				cumul.push_back(totalWeight);		
-				index++;
 			}
 		}
 		catch(const invalid_param& e){
-			//cerr << "Index " << index << " of edge list has weight less than or equal to zero." << endl;
+			cerr << "Index of edge list has weight less than or equal to zero." << endl;
 		}
 	}
 
 	//Obtain a random number between 0 and totalWeight-1
 	int randNum = (rand() % totalWeight-1);
-
-	//cout << "Random integer: " << randNum << endl;
 	
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
-	for(int k = 1; k < cumul.size(); k++){
-		if(randNum < cumul.at(k) && randNum > cumul.at(k-1)){
-			
-			list<Graph::Edge>::iterator it = lst.begin();
-    		advance(it, k);
-			sampleEdge = *it;
+	for(int k = 0; k < cumul.size(); k++){
+	
+
+		if(k == 0){
+			if(randNum <= cumul.at(k)){
+				list<Graph::Edge>::iterator it = lst.begin();
+	    		advance(it, k);
+				sampleEdge = *it;
+			}
+		}
+		else{
+			if(randNum <= cumul.at(k) && randNum > cumul.at(k-1)){
+				list<Graph::Edge>::iterator it = lst.begin();
+	    		advance(it, k);
+				sampleEdge = *it;
+			}	
 		}
 	}
 
 	return sampleEdge;
 }
 
-
 //Traverse the graph rw_num_walks times with walks of length rw_walk_length
 map<int, int> Graph::random_walks(int start_node) const{
 	map<int, int> walk;
  	vector<list<Edge>> adj_list = get_adj_list();
+ 	int currentNode = start_node;
 
  	int walkCount = 0;
  	int lengthCount = 0;
+
+
 
  	//Perform rw_num_walk walks
  	for(walkCount = 0; walkCount < get_num_walks(); walkCount++){
 
  		//Visit rw_walk_length nodes
  		for(lengthCount = 0; lengthCount < get_walk_length(); lengthCount++){
+ 			 	cout << "Start node: " << start_node << endl;
 
- 			list<Edge> edgeList = adj_list.at(start_node);
+ 			list<Edge> edgeList = adj_list.at(currentNode);
  			Edge newEdge = sampleEdge(edgeList);
 
  			try{
- 				//Check if the start node is invalid
- 				if(newEdge.origin != start_node){
+ 				//Check if the node is invalid
+ 				if(newEdge.origin != currentNode){
 	 				throw invalid_graph_id(newEdge.origin);
  				}
 
  				//Increment the number of times the node has been visited
- 				if(walk.count(start_node)){
- 					int timesVisited = walk[start_node];	
+ 				if(walk.count(currentNode)){
+ 					int timesVisited = walk[currentNode];	
  					timesVisited++;
- 					walk[start_node] = timesVisited;
+ 					walk[currentNode] = timesVisited;
  				}
  				else{
- 					walk[start_node] = 1;
+ 					walk[currentNode] = 1;
  				}
 
  			}
@@ -239,8 +254,102 @@ void isIntegerGreaterThanZero(int& x){
     }
 }
 
+//Generates the pages in the graph -- Copied from simpleFinalTest.cpp
+void generate_all_pages()
+{
+
+	const string PATH = "/home/singzon/Development/comp322/a4";
+	string file_input_graph_edges = PATH + "/wg_edges.txt";
+	string file_input_graph_wikis = PATH + "/wg_wikis.txt";
+
+    vector<pair<string, string> > all_ins;
+    string path_to_txt = "wpcd/plaintext_articles";
+    ifstream ff; ff.open(PATH + "/wpcd/all_txt.txt");
+    
+    set<string> all_texts;
+    
+    while (!ff.eof()) {
+        string new_path_html;
+        getline(ff, new_path_html);
+        string s = new_path_html;
+        s = s.substr(s.find_last_of("/") + 1, s.length());
+        s = s.substr(0, s.find_last_of("."));
+        all_texts.insert(s);
+    }
+    ff.close();
+    ff.open( PATH + "/wpcd/all_htm.txt");
+    ofstream fout; fout.open( PATH + "/wpcd/all_pages.txt");
+    
+    while (!ff.eof()) {
+        string new_path_html;
+        getline(ff, new_path_html);
+        if(new_path_html.length() == 0) continue;
+        string s = new_path_html;
+        s = s.substr(s.find_last_of("/") + 1, s.length());
+        s = s.substr(0, s.find_last_of("."));
+        if(all_texts.find(s) != all_texts.end()) {
+            fout << "wpcd/" + new_path_html << endl;    
+            fout << path_to_txt << "/" << s << ".txt" << endl;
+        }
+    }
+    ff.close();
+    fout.close();
+}
+
+//Creates a graph from input files -- Copied from simpleClassTest.cpp
+void createGraph(){
+
+	const string PATH = "/home/singzon/Development/comp322/a4";
+	string file_input_graph_edges = PATH + "/wg_edges.txt";
+	string file_input_graph_wikis = PATH + "/wg_wikis.txt";
+
+	try {
+        WikiGraph wg;
+        // if you want to read the graph using your own code,
+        // change the boolean to false.
+        bool read_graph_file = true;
+        if(read_graph_file) {
+            cout  << "Read list of articles from file" << endl;
+            ifstream ifedge; ifedge.open(file_input_graph_edges);
+            ifstream ifwiki; ifwiki.open(file_input_graph_wikis);
+            WikiGraph new_g(ifedge,ifwiki);
+            wg = new_g;
+            
+        }else {
+            cout  << "Creating list of articles" << endl;
+            generate_all_pages();
+            
+            cout  << "Generate graph of articles" << endl;
+            
+            ifstream ff; ff.open(PATH + "/wpcd/all_pages.txt");
+            
+            map<string,string> html_txt;
+            while (!ff.eof()) {
+                string str1, str2;
+                getline(ff, str1);
+                getline(ff, str2);
+                html_txt[str1] = str2;
+            }
+            
+            int max_pages_to_read = 10000;
+            for (auto x : html_txt) {
+                if (x.first.size() == 0) continue;
+                wg.push_page(make_wiki_page(PATH + "/" + x.first,
+                                            PATH + "/" + x.second));
+                if(--max_pages_to_read <= 0) break;
+            }
+            ofstream ofedge; ofedge.open(PATH + "/wg_edges.txt");
+            ofstream ofwiki; ofwiki.open(PATH + "/wg_wikis.txt");
+            wg.save_to_output_files(ofedge, ofwiki);
+        }
+    }
+    catch (my_exception& ex) {
+        cout << ex.get_error_message() << endl;
+    }
+}
+
 //Displays messages and accepts commands on the command line
-void displayInterface(string PATH){
+void displayInterface(){
     WikiGraph wg;
     bool valid = false;
     int relatedPages;
@@ -294,22 +403,24 @@ void displayInterface(string PATH){
      
         catch (invalid_graph_id& ex){
         	cout << "Sorry, the requested graph ID is invalid." << endl;
-        	cout << "Stacktrace" << ex.get_error_message() << endl;
+        	cout << "Stacktrace:" << endl << ex.get_error_message() << endl;
         }
 
         catch (invalid_page_title& ex){
         	cout << "Sorry, the page you requested is invalid." << endl;
-        	cout << "Stacktrace" << ex.get_error_message() << endl;
+        	cout << "Stacktrace:" << endl << ex.get_error_message() << endl;
         }
 
         catch (invalid_param& ex){
         	cout << "Sorry, a parameter entered is invalid." << endl;
-        	cout << "Stacktrace" << ex.get_error_message() << endl;
+        	cout << "Stacktrace" << endl << ex.get_error_message() << endl;
         }
 
         catch (my_exception& ex) {
             cout << ex.get_error_message() << endl;
         }
+
+        cout << endl;
     } 
 }
 
