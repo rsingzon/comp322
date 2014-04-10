@@ -102,15 +102,12 @@ map<int, int> Graph::random_walks(int start_node) const{
 
 //Performs a breadth first search to find nodes related to start_node
 list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
-	vector<list<Graph::Edge>> adj_list = get_adj_list();
-	list<int> nodeList;
+	list<int> nodeList;			//List of nodes to return
 	set<int> elementsToReturn;	//Keeps elements that should be returned
 	queue<int> waitList;		//Keeps a list of nodes to be added to the set
 	int count = 1;				//Number of nodes visited
-	
-	//Add the first to the queue and set of added nodes
-	waitList.push(start_node);
-	elementsToReturn.insert(start_node);
+
+	vector<list<Graph::Edge>> adj_list = get_adj_list();
 
 	try{
 		
@@ -123,6 +120,10 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 		if(number_nodes <= 0){
 			throw invalid_param("The number of nodes used for the BFS is less than or equal to zero");
 		}
+
+		//Add the first to the queue and set of added nodes
+		waitList.push(start_node);
+		elementsToReturn.insert(start_node);
 	
 		while(!waitList.empty() && count >= number_nodes){
 
@@ -165,11 +166,31 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 }
 
 list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
-	list<int> spanningTree;
-	set<int> elementsToReturn;
-	priority_queue<Edge> waitList;
+	list<int> spanningTree;			//Spanning tree to return
+	set<int> elementsToReturn;		//IDs of nodes already in the spanning tree
+	priority_queue<Edge> waitList;	//Priority queue holding nodes to be added to the tree
+	int count = 1;					//Number of nodes in the spanning tree
+
+	vector<list<Graph::Edge>> adj_list = get_adj_list();
 
 	try{
+
+		//Check that the start node is valid
+		if(start_node <= 0 || start_node > adj_list.size()){
+			throw invalid_graph_id(start_node);
+		}
+
+		//Check that the number of nodes is greater than zero
+		if(number_nodes <= 0){
+			throw invalid_param("The number of nodes for the spanning tree is less than or equal to zero");
+		}
+
+		//Add the neighbours of the start node to the priority queue
+		for(Graph::Edge edge : adj_list.at(start_node)){
+			waitList.push(edge);
+		}
+
+	elementsToReturn.insert(start_node);
 
 	}
 	catch(const invalid_graph_id& e){
@@ -190,4 +211,105 @@ Graph::~Graph(){
 //Destructor for the WikiGraph class
 WikiGraph::~WikiGraph(){
 
+	/* This destructor does not need to do anything because the WikiGraph class
+	 * does not dynamically allocate memory onto the heap, and thus all of its 
+	 * fields are deleted 
+	 */
 }
+
+//Method to check user input
+void isIntegerGreaterThanZero(int& x){
+	bool valid = false;
+    while(!valid){
+    	
+    	//Check if an integers was entered
+        if(cin >> x){	
+            if(x > 0){
+            	valid = true;	
+            } 
+        }
+        else {
+        	cin.clear();
+        }
+		
+		//Empty input stream
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        if(!valid) cout << "Oops! " << x << " is not a valid number." << endl;
+    }
+}
+
+//Displays messages and accepts commands on the command line
+void displayInterface(string PATH){
+    WikiGraph wg;
+    bool valid = false;
+    int relatedPages;
+    int subgraphSize;
+    int numWalks;
+    int walkLength;
+    string articleName;
+
+    cout << "Welcome to the Wikipedia page traversal system!" << endl;
+
+    while(true){
+    	cout << "Please enter the number of related pages you would like to retrieve: " << endl;
+	    isIntegerGreaterThanZero(relatedPages);
+
+	    cout << "Please enter the size of the subgraph to be used for the BFS and spanning tree:" << endl;
+	    isIntegerGreaterThanZero(subgraphSize);
+
+	    cout << "Please enter the number of random walks to perform: " << endl;
+	    isIntegerGreaterThanZero(numWalks);
+
+	    cout << "Please enter the length of each walk: " << endl;
+	    isIntegerGreaterThanZero(walkLength);
+
+	    cout << "Please enter the name of a Wikipedia article: " << endl;
+	    cin >> articleName;	
+
+	    //Exit if the user types exit
+	    transform(articleName.begin(), articleName.end(), articleName.begin(), ::tolower);
+	    if(articleName.compare("exit") == 0){
+	    	break;
+	    }
+
+		
+		//Print the results from the search        	
+    	try {
+            string start_page(articleName);
+            cout << "-------------------------------------" << endl;
+            cout << "Results using full graph random walks" << endl;
+            cout << "-------------------------------------" << endl;
+            wg.print_related_pages(articleName, relatedPages);
+            cout << "------------------------------------------" << endl;
+            cout << "Results using random walks on BFS subgraph" << endl;
+            cout << "------------------------------------------" << endl;
+            wg.print_related_bfs(articleName, relatedPages, subgraphSize);
+            cout << "------------------------------------------" << endl;
+            cout << "Results using random walks on Spanning Tree subgraph" << endl;
+            cout << "-------------------" << endl;
+            wg.print_related_spanning_tree(articleName, relatedPages, subgraphSize);
+            cout << "-------------------" << endl;
+        }
+     
+        catch (invalid_graph_id& ex){
+        	cout << "Sorry, the requested graph ID is invalid." << endl;
+        	cout << "Stacktrace" << ex.get_error_message() << endl;
+        }
+
+        catch (invalid_page_title& ex){
+        	cout << "Sorry, the page you requested is invalid." << endl;
+        	cout << "Stacktrace" << ex.get_error_message() << endl;
+        }
+
+        catch (invalid_param& ex){
+        	cout << "Sorry, a parameter entered is invalid." << endl;
+        	cout << "Stacktrace" << ex.get_error_message() << endl;
+        }
+
+        catch (my_exception& ex) {
+            cout << ex.get_error_message() << endl;
+        }
+    } 
+}
+
