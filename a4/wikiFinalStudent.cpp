@@ -36,14 +36,21 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 				cumul.push_back(totalWeight);		
 			}
 		}
-		catch(const invalid_param& e){
+		catch(invalid_param& e){
 			e.addToStack("Index of edge list has weight less than or equal to zero at sampleEdge");
     		throw;
 		}
 	}
 
 	//Obtain a random number between 0 and totalWeight-1
-	int randNum = (rand() % totalWeight-1);
+	int randNum;
+	if(totalWeight == 0){
+		randNum = 0;
+	}
+	else{
+		randNum = (rand() % totalWeight-1);
+	}
+	
 	
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
 	for(int k = 0; k < cumul.size(); k++){
@@ -115,7 +122,7 @@ map<int, int> Graph::random_walks(int start_node) const{
  				}
 
  			}
- 			catch(const invalid_graph_id& e){
+ 			catch(invalid_graph_id& e){
  				e.addToStack("Invalid param at random_walks");
     			throw;
  			}
@@ -178,11 +185,11 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 			}
 		}	
 	}
-	catch(const invalid_graph_id& e){
+	catch(invalid_graph_id& e){
 		e.addToStack("Invalid graph ID at breadth_first_search");
     	throw;
 	}
-	catch(const invalid_param& e){
+	catch(invalid_param& e){
 		e.addToStack("Invalid param at breadth_first_search");
     	throw;
 	}
@@ -199,7 +206,6 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 
 	vector<list<Graph::Edge>> adj_list = get_adj_list();
 
-
 	try{
 		
 		//Check if the start node is invalid
@@ -212,8 +218,7 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 			throw invalid_param("The number of nodes used for the BFS is less than or equal to zero");
 		}
 
-
-		//Add the neighbours of the start node to the queue
+		//Add the neighbours of the start node to the priority queue
 		for(Graph::Edge edge : adj_list.at(start_node)){
 			waitList.push(edge);
 		}
@@ -252,15 +257,11 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 			}
 		}
 	}
-	catch(const invalid_graph_id& e){
+	catch(invalid_graph_id& e){
 		e.addToStack("spanning_tree");
     	throw;
 	}
-	catch(const invalid_param& e){
-		e.addToStack("spanning_tree");
-    	throw;
-	}
-	catch(const exception& e){
+	catch(invalid_param& e){
 		e.addToStack("spanning_tree");
     	throw;
 	}
@@ -454,9 +455,9 @@ void displayInterface(){
             wg.print_related_bfs(articleName, relatedPages, subgraphSize);
             cout << "------------------------------------------" << endl;
             cout << "Results using random walks on Spanning Tree subgraph" << endl;
-            cout << "-------------------" << endl;
+            cout << "----------------------------------------------------" << endl;
             wg.print_related_spanning_tree(articleName, relatedPages, subgraphSize);
-            cout << "-------------------" << endl;
+            cout << "----------------------------------------------------" << endl;
         }
      
         catch (invalid_graph_id& ex){
