@@ -51,7 +51,6 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 		randNum = (rand() % totalWeight-1);
 	}
 	
-	
 	//Find the index of k such that cumul[k-1] < randNum <= cumul[k]
 	for(int k = 0; k < cumul.size(); k++){
 
@@ -223,6 +222,7 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 			waitList.push(edge);
 		}
 
+		nodeList.push_back(start_node);
 		elementsToReturn.insert(start_node);
 	
 		while(!waitList.empty() && count <= number_nodes){
@@ -249,9 +249,7 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 				//Add neighbours to queue if they have not already been added
 				if(elementsToReturn.count(neighbour) == 0){
 					
-					for(Graph::Edge edge : adj_list.at(neighbour)){
-						waitList.push(edge);	
-					}
+					waitList.push(edge);
 					elementsToReturn.insert(neighbour);
 				}
 			}
@@ -266,10 +264,6 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
     	throw;
 	}
 	
-	for (int i : nodeList){
-		cout << i << endl;
-	}
-
 	return nodeList;
 }
 
@@ -307,7 +301,7 @@ void isIntegerGreaterThanZero(int& x){
 		//Empty input stream
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-        if(!valid) cout << "Oops! " << x << " is not a valid number." << endl;
+        if(!valid) cout << "Oops! Your input is not valid." << endl;
     }
 }
 
@@ -356,7 +350,6 @@ void generate_all_pages()
 //Displays messages and accepts commands on the command line
 void displayInterface(){
     WikiGraph wg;
-    bool valid = false;
     int relatedPages;
     int subgraphSize;
     int numWalks;
