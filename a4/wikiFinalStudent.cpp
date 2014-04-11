@@ -348,6 +348,7 @@ void generate_all_pages()
 }
 
 //Displays messages and accepts commands on the command line
+//Add this method to the main method to run the program
 void displayInterface(){
     WikiGraph wg;
     int relatedPages;
