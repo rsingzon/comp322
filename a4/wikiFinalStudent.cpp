@@ -37,7 +37,8 @@ Graph::Edge Graph::sampleEdge(list<Graph::Edge> lst) const{
 			}
 		}
 		catch(const invalid_param& e){
-			cerr << "Index of edge list has weight less than or equal to zero." << endl;
+			e.addToStack("Index of edge list has weight less than or equal to zero at sampleEdge");
+    		throw;
 		}
 	}
 
@@ -115,7 +116,8 @@ map<int, int> Graph::random_walks(int start_node) const{
 
  			}
  			catch(const invalid_graph_id& e){
-
+ 				e.addToStack("Invalid param at random_walks");
+    			throw;
  			}
   		}
  	}
@@ -177,10 +179,12 @@ list<int> Graph::breadth_first_search(int start_node, int number_nodes) const{
 		}	
 	}
 	catch(const invalid_graph_id& e){
-
+		e.addToStack("Invalid graph ID at breadth_first_search");
+    	throw;
 	}
 	catch(const invalid_param& e){
-
+		e.addToStack("Invalid param at breadth_first_search");
+    	throw;
 	}
 
 
@@ -208,14 +212,16 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 			throw invalid_param("The number of nodes used for the BFS is less than or equal to zero");
 		}
 
+
 		//Add the neighbours of the start node to the queue
 		for(Graph::Edge edge : adj_list.at(start_node)){
 			waitList.push(edge);
 		}
+
 		elementsToReturn.insert(start_node);
 	
 		while(!waitList.empty() && count <= number_nodes){
-
+			
 			//Get the next node in the queue
 			int currentNode = waitList.top().destination;
 			waitList.pop();
@@ -247,13 +253,20 @@ list<int> Graph::spanning_tree(int start_node, int number_nodes) const{
 		}
 	}
 	catch(const invalid_graph_id& e){
-
+		e.addToStack("spanning_tree");
+    	throw;
 	}
 	catch(const invalid_param& e){
-
+		e.addToStack("spanning_tree");
+    	throw;
 	}
 	catch(const exception& e){
-		cout << " I have an error" << endl;
+		e.addToStack("spanning_tree");
+    	throw;
+	}
+	
+	for (int i : nodeList){
+		cout << i << endl;
 	}
 
 	return nodeList;
