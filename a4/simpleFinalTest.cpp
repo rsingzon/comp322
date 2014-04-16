@@ -13,13 +13,12 @@ using namespace std;
 
 // change PATH to the location of the folder where you have saved
 // the resources for this homework
-const string PATH = "/Users/gcoman/Documents/wiki_cs322";
+const string PATH = "/home/singzon/Development/comp322/a4";
 
 string file_input_graph_edges = PATH + "/wg_edges.txt";
 string file_input_graph_wikis = PATH + "/wg_wikis.txt";
 
 void generate_all_pages();
-
 
 int main2() {
     cout  << "Read list of articles from file" << endl;
@@ -31,7 +30,7 @@ int main2() {
     return 0;
 }
 
-
+void displayInterface(string PATH);
 int main() {
     try {
         WikiGraph wg;
@@ -87,14 +86,14 @@ int main() {
                 cout << "-------------------" << endl;
                 wg.print_related_pages(start_page, num_results);
                 cout << "-------------------" << endl;
-                cout << "Results using random walks on BFS subgraph" << endl;
+               /* cout << "Results using random walks on DFS subgraph" << endl;
                 cout << "-------------------" << endl;
                 wg.print_related_bfs(start_page, num_results, size_graph);
                 cout << "-------------------" << endl;
                 cout << "Results using random walks on Spanning Tree subgraph" << endl;
                 cout << "-------------------" << endl;
                 wg.print_related_spanning_tree(start_page, num_results, size_graph);
-                cout << "-------------------" << endl;
+                cout << "-------------------" << endl;*/
                 break; // if search was succesful
             }catch (my_exception& ex) {
                 cout << ex.get_error_message() << endl;
@@ -106,43 +105,29 @@ int main() {
     
     return 0;
 }
+/*
+    list<Graph::Edge> edgeList;
+        Graph::Edge e1 = { 1, 4, 5 };
+        Graph::Edge e2 = { 1, 2, 2 };
+        Graph::Edge e3 = { 4, 2, 5 };
+        Graph::Edge e4 = { 4, 5, 58 };
+        Graph::Edge e5 = { 2, 3, 14 };
+        Graph::Edge e6 = { 5, 2, 4 };
+        Graph::Edge e7 = { 5, 3, 34 };
 
+        edgeList.push_back(e1);
+        edgeList.push_back(e2);
+        edgeList.push_back(e3);
+        edgeList.push_back(e4);
+        edgeList.push_back(e5);
+        edgeList.push_back(e6);
+        edgeList.push_back(e7);
 
+        Graph testGraph(edgeList, 5);
+        
+        cout << "Contents of graph" << endl;
+        cout << testGraph;
 
+        Graph::Edge sampledEdge = testGraph.sampleEdge(edgeList);*/
 
-void generate_all_pages()
-{
-    vector<pair<string, string> > all_ins;
-    string path_to_txt = "wpcd/plaintext_articles";
-    ifstream ff; ff.open(PATH + "/wpcd/all_txt.txt");
     
-    set<string> all_texts;
-    
-    while (!ff.eof()) {
-        string new_path_html;
-        getline(ff, new_path_html);
-        string s = new_path_html;
-        s = s.substr(s.find_last_of("/") + 1, s.length());
-        s = s.substr(0, s.find_last_of("."));
-        all_texts.insert(s);
-    }
-    ff.close();
-    ff.open( PATH + "/wpcd/all_htm.txt");
-    ofstream fout; fout.open( PATH + "/wpcd/all_pages.txt");
-    
-    while (!ff.eof()) {
-        string new_path_html;
-        getline(ff, new_path_html);
-        if(new_path_html.length() == 0) continue;
-        string s = new_path_html;
-        s = s.substr(s.find_last_of("/") + 1, s.length());
-        s = s.substr(0, s.find_last_of("."));
-        if(all_texts.find(s) != all_texts.end()) {
-            fout << "wpcd/" + new_path_html << endl;    
-            fout << path_to_txt << "/" << s << ".txt" << endl;
-        }
-    }
-    ff.close();
-    fout.close();
-}
-
