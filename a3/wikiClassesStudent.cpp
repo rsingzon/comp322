@@ -287,9 +287,15 @@ void WikiGraph::push_page(WikiPage& wp){
 
 	//For all links in the WikiPage, find the weight between the edge
 	for(string page : linkedPages){
-		
+	
 		//Check if the page exists in the title_to_node vector
 		if(title_to_node.count(page)){
+
+			//Check if the node_to_wiki vector contains the page
+			int page_id = title_to_node[page];
+			if(page_id >= node_to_wiki.size()){
+				continue;
+			}
 
 			//Add a new edge between the new wikipage and the linked page
 			Edge newEdge;
@@ -304,7 +310,7 @@ void WikiGraph::push_page(WikiPage& wp){
 			}
 
 			ifstream destination_txt;
-			destination_txt.open(node_to_wiki.at(title_to_node[page]).txt_location);
+			destination_txt.open(node_to_wiki.at(page_id).txt_location);
 			if(destination_txt.fail()){
 				cout << "Failed to open destination text file" << endl;
 			}

@@ -1,20 +1,32 @@
 1
-Montreal
-./wiki/wp/m/Montreal.htm
-./wiki/text/Montreal.txt
-2
-Miami, Florida
-./wiki/wp/m/Miami%2C_Florida.htm
-./wiki/text/Miami%2C_Florida.txt
-3
 New York City
 ./wiki/wp/n/New_York_City.htm
 ./wiki/text/New_York_City.txt
-4
+2
 Chicago
 ./wiki/wp/c/Chicago.htm
 ./wiki/text/Chicago.txt
-5
+3
 Toronto
 ./wiki/wp/t/Toronto.htm
 ./wiki/text/Toronto.txt
+4
+Canada
+./wiki/wp/c/Canada.htm
+./wiki/text/Canada.txt
+5
+University of Chicago
+./wiki/wp/u/University_of_Chicago.htm
+./wiki/text/University_of_Chicago.txt
+6
+Vancouver
+./wiki/wp/v/Vancouver.htm
+./wiki/text/Vancouver.txt
+7
+Montreal
+./wiki/wp/m/Montreal.htm
+./wiki/text/Montreal.txt
+8
+Miami, Florida
+./wiki/wp/m/Miami%2C_Florida.htm
+./wiki/text/Miami%2C_Florida.txt
